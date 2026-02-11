@@ -236,7 +236,7 @@ body{
 
 <body>
 
-  <!-- ✅ lokalne tło MP4 -->
+  <!-- lokalne tło MP4 -->
   <video id="bgVideo" muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -250,7 +250,7 @@ body{
   <div id="stage2" class="stage stage2 hidden">
     <div class="askBox">
       <div class="askTitle">Mam pytanie… 💞</div>
-      <div class="askSubtitle">Czy przejdziesz ze mną dalej?</div>
+      <div class="askSubtitle">Czy zostaniesz moją walentynką ?</div>
       <div class="btnRow">
         <button id="yesBtn" class="btn yesBtn">Tak</button>
         <button id="noBtn" class="btn noBtn">Nie</button>
@@ -277,8 +277,8 @@ body{
     </div>
   </div>
 
-  <!-- ✅ 1 plik music.mp3: pętla 36–50 i start dokładnie przy 1. linijce -->
-  <audio id="music" preload="auto">
+  <!-- muzyka: od początku do końca, w pętli -->
+  <audio id="music" preload="auto" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
@@ -314,23 +314,8 @@ document.addEventListener("DOMContentLoaded", () => {
   updateStartText();
   addEventListener("resize", updateStartText);
 
-  // Pętla piosenki: 36s → 50s
-  const LOOP_START = 36;
-  const LOOP_END = 50;
-  const MUSIC_VOL = 0.25; // docelowa głośność
-
-  music.loop = false;
-
-  music.addEventListener("loadedmetadata", () => {
-    try { music.currentTime = LOOP_START; } catch(e){}
-  });
-
-  music.addEventListener("timeupdate", () => {
-    if (music.currentTime >= LOOP_END) {
-      music.currentTime = LOOP_START + 0.02;
-      music.play().catch(()=>{});
-    }
-  });
+  // Głośność muzyki (możesz zmienić)
+  const MUSIC_VOL = 0.25;
 
   // fade
   const clamp01 = (v)=> Math.max(0, Math.min(1, v));
@@ -411,9 +396,6 @@ document.addEventListener("DOMContentLoaded", () => {
     wishesBox.setAttribute("aria-hidden","false");
     wishesText.innerHTML = "";
 
-    // ✅ dokładnie w chwili pierwszej linijki: muzyka staje się słyszalna
-    fadeTo(music, MUSIC_VOL, 900);
-
     lines.forEach((t,i)=>{
       const div = document.createElement("div");
       div.className = "wLine";
@@ -441,13 +423,13 @@ document.addEventListener("DOMContentLoaded", () => {
     bigTimer.classList.add("hidden");
     wishesText.innerHTML = "";
 
-    // AUDIO (iOS-safe): odpalamy w geście, ale na 0 głośności
-    try { music.currentTime = LOOP_START; } catch(e){}
+    // ✅ MUZYKA: startuje OD RAZU na etapie 3, od początku, w pętli
+    music.currentTime = 0;
     music.volume = 0;
     music.play().catch(()=>{});
+    fadeTo(music, MUSIC_VOL, 900);
 
-    // Po 6.5s pokazujemy życzenia,
-    // a w tej samej chwili muzyka robi się słyszalna
+    // Życzenia po 6.5s
     setTimeout(showWishes, 6500);
   }
 
