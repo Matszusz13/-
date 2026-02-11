@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>💖 Dla Ciebie</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@400;600&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+:root{
+  --bg1:#120014;
+  --bg2:#2a0030;
+  --text:#ffe9ff;
+  --muted:#ffd0ffcc;
+  --accent:#ff4da6;
+  --accent2:#ff7aa8;
+
+  --timer-reserved: 220px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  overflow:hidden;
+  font-family:Poppins,system-ui,sans-serif;
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  color:var(--text);
+}
+
+/* ===== TŁO MP4 ===== */
+#bgVideo{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  z-index:0;
+  opacity:0;
+  transition:opacity 1.6s ease;
+  filter:saturate(1.05) contrast(1.03);
+}
+
+/* ===== ETAPY ===== */
+.stage{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  z-index:10;
+  pointer-events:auto;
+}
+.hidden{display:none !important}
+
+/* ETAP 1 */
+.stage1{
+  background:
+    radial-gradient(900px 600px at 50% 40%, #ff4da61f, transparent 70%),
+    linear-gradient(160deg, #0b000e, #230027);
+}
+
+.bigStartBtn{
+  width:clamp(210px,60vw,360px);
+  height:clamp(210px,60vw,360px);
+  border-radius:50%;
+  border:none;
+  font-size:clamp(22px,5vw,34px);
+  font-weight:900;
+  cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#120016;
+  animation:pulse 1.2s infinite;
+  box-shadow:0 18px 65px #ff2f8a55;
+  -webkit-tap-highlight-color: transparent;
+}
+.bigStartBtn:active{ transform:scale(.98); }
+
+@keyframes pulse{
+  0%{box-shadow:0 18px 65px #ff2f8a55, 0 0 0 0 #ff4da6aa}
+  70%{box-shadow:0 18px 65px #ff2f8a55, 0 0 0 35px transparent}
+  100%{box-shadow:0 18px 65px #ff2f8a55, 0 0 0 0 transparent}
+}
+
+/* ETAP 2 */
+.stage2{ background:transparent; }
+.askBox{
+  width:clamp(320px,86vw,680px);
+  padding:clamp(22px,6vw,60px);
+  border-radius:28px;
+  background:#ffffff14;
+  border:1px solid #ffffff22;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  text-align:center;
+  box-shadow:0 22px 70px #00000066;
+}
+.askTitle{
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(36px,8vw,74px);
+  line-height:1;
+}
+.askSubtitle{
+  margin-top:12px;
+  font-size:clamp(14px,3.2vw,18px);
+  color:#ffd0ffdd;
+}
+.btnRow{
+  margin-top:clamp(18px,4vw,34px);
+  display:flex;
+  justify-content:center;
+  gap:clamp(12px,3vw,30px);
+  flex-wrap:wrap;
+}
+.btn{
+  padding:clamp(14px,3vw,18px) clamp(22px,5vw,38px);
+  border-radius:999px;
+  border:none;
+  font-size:clamp(16px,3.5vw,26px);
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 16px 40px #00000035;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active{ transform:scale(.98); }
+.yesBtn{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#120016; }
+.noBtn{ background:#ffffff20; color:var(--text); border:1px solid #ffffff30; }
+
+/* ===== ETAP 3 UI ===== */
+.ui{ position:fixed; inset:0; z-index:20; pointer-events:none; }
+
+/* ŻYCZENIA: środek + ramka, nigdy nie nachodzą na zegar */
+.wishesBox{
+  position:absolute;
+  left:50%;
+  top:calc(50% - (var(--timer-reserved) * 0.20));
+  transform:translate(-50%,-50%);
+  width:min(780px,92vw);
+
+  padding:clamp(18px,4vw,34px);
+  border-radius:28px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.20);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 22px 70px rgba(0,0,0,0.65);
+  text-align:center;
+
+  max-height:calc(100vh - var(--timer-reserved) - 28px - var(--safe-bottom));
+  overflow:hidden;
+}
+.title{
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(40px,7vw,72px);
+  margin:0 0 12px;
+  line-height:1.05;
+}
+.wishesText{
+  font-family:"Cormorant Garamond",serif;
+  font-size:clamp(18px,3vw,28px);
+  line-height:1.5;
+  color:#ffe9ffef;
+  text-shadow:0 10px 30px #00000055;
+}
+.wLine{
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity .9s ease, transform .9s ease;
+  margin:10px 0;
+}
+.wLine.show{ opacity:1; transform:none; }
+.signature{
+  margin-top:clamp(10px,2.6vh,18px);
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(26px,5vw,44px);
+  color:#ffe9fff0;
+  opacity:.95;
+}
+
+/* ZEGAR */
+.bigTimer{
+  position:absolute;
+  bottom:calc(clamp(10px,2.6vh,22px) + var(--safe-bottom));
+  left:50%;
+  transform:translateX(-50%);
+  width:min(860px,94vw);
+
+  background:rgba(0,0,0,0.38);
+  padding:clamp(10px,2.4vw,16px);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,0.20);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 22px 70px rgba(0,0,0,0.65);
+  text-align:center;
+}
+.timerLabel{
+  font-weight:800;
+  color:#ffd0ffdd;
+  margin-bottom:10px;
+  font-size:clamp(12px,2.6vw,16px);
+}
+.timerGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+  gap:10px;
+}
+.tChip{
+  background:rgba(255,255,255,0.14);
+  padding:clamp(10px,2.2vw,14px);
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.14);
+}
+.tN{ font-size:clamp(18px,4.8vw,40px); font-weight:900; line-height:1.05; }
+.tL{ font-size:clamp(10px,2.2vw,12px); color:var(--muted); margin-top:4px; }
+
+@media (max-width:430px){
+  :root{ --timer-reserved:190px; }
+  .bigTimer{ width:92vw; border-radius:18px; padding:12px; }
+  .timerGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-height:720px){
+  :root{ --timer-reserved:170px; }
+  .bigTimer{ width:92vw; padding:10px; border-radius:18px; }
+}
+@media (max-height:640px){
+  :root{ --timer-reserved:150px; }
+  .timerGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- ✅ lokalne tło MP4 -->
+  <video id="bgVideo" muted loop playsinline preload="auto">
+    <source src="background.mp4" type="video/mp4">
+  </video>
+
+  <!-- ETAP 1 -->
+  <div id="stage1" class="stage stage1">
+    <button id="startBigBtn" class="bigStartBtn">Kliknij</button>
+  </div>
+
+  <!-- ETAP 2 -->
+  <div id="stage2" class="stage stage2 hidden">
+    <div class="askBox">
+      <div class="askTitle">Mam pytanie… 💞</div>
+      <div class="askSubtitle">Czy przejdziesz ze mną dalej?</div>
+      <div class="btnRow">
+        <button id="yesBtn" class="btn yesBtn">Tak</button>
+        <button id="noBtn" class="btn noBtn">Nie</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAP 3 UI -->
+  <div class="ui">
+    <div id="wishesBox" class="wishesBox hidden" aria-hidden="true">
+      <h1 class="title">Dla Ciebie 💖</h1>
+      <div id="wishesText" class="wishesText"></div>
+      <div class="signature">– Mateusz</div>
+    </div>
+
+    <div id="bigTimer" class="bigTimer hidden" aria-hidden="true">
+      <div class="timerLabel" id="timerLabel">⏳</div>
+      <div class="timerGrid">
+        <div class="tChip"><div class="tN" id="d">—</div><div class="tL">dni</div></div>
+        <div class="tChip"><div class="tN" id="h">—</div><div class="tL">godzin</div></div>
+        <div class="tChip"><div class="tN" id="m">—</div><div class="tL">minut</div></div>
+        <div class="tChip"><div class="tN" id="s">—</div><div class="tL">sekund</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ 1 plik music.mp3: pętla 36–50 i start dokładnie przy 1. linijce -->
+  <audio id="music" preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const stage1 = document.getElementById("stage1");
+  const stage2 = document.getElementById("stage2");
+  const startBtn = document.getElementById("startBigBtn");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn  = document.getElementById("noBtn");
+
+  const bgVideo = document.getElementById("bgVideo");
+  const music = document.getElementById("music");
+
+  const wishesBox = document.getElementById("wishesBox");
+  const wishesText = document.getElementById("wishesText");
+  const bigTimer = document.getElementById("bigTimer");
+
+  const dEl = document.getElementById("d");
+  const hEl = document.getElementById("h");
+  const mEl = document.getElementById("m");
+  const sEl = document.getElementById("s");
+  const timerLabel = document.getElementById("timerLabel");
+
+  // Kliknij / Dotknij
+  function isTouch(){
+    return matchMedia("(pointer:coarse)").matches && !matchMedia("(pointer:fine)").matches;
+  }
+  function updateStartText(){
+    startBtn.textContent = isTouch() ? "Dotknij" : "Kliknij";
+  }
+  updateStartText();
+  addEventListener("resize", updateStartText);
+
+  // Pętla piosenki: 36s → 50s
+  const LOOP_START = 36;
+  const LOOP_END = 50;
+  const MUSIC_VOL = 0.25; // docelowa głośność
+
+  music.loop = false;
+
+  music.addEventListener("loadedmetadata", () => {
+    try { music.currentTime = LOOP_START; } catch(e){}
+  });
+
+  music.addEventListener("timeupdate", () => {
+    if (music.currentTime >= LOOP_END) {
+      music.currentTime = LOOP_START + 0.02;
+      music.play().catch(()=>{});
+    }
+  });
+
+  // fade
+  const clamp01 = (v)=> Math.max(0, Math.min(1, v));
+  function fadeTo(el, target, ms=900){
+    const to = clamp01(target);
+    const from = clamp01(el.volume ?? 0);
+    const t0 = performance.now();
+    const tick = (t)=>{
+      const k = Math.min(1, (t - t0)/ms);
+      el.volume = clamp01(from + (to - from)*k);
+      if(k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  // Timer (22.09.2025 17:30)
+  const startDate = new Date(2025, 8, 22, 17, 30, 0);
+  const pad2 = (n)=> String(n).padStart(2,"0");
+
+  function updateTimer(){
+    const now = new Date();
+    let diff = now - startDate;
+    let future = diff < 0;
+    if(future) diff = Math.abs(diff);
+
+    const totalSec = Math.floor(diff/1000);
+    const days = Math.floor(totalSec/86400);
+    const hours = Math.floor((totalSec%86400)/3600);
+    const mins  = Math.floor((totalSec%3600)/60);
+    const secs  = totalSec%60;
+
+    dEl.textContent = days;
+    hEl.textContent = pad2(hours);
+    mEl.textContent = pad2(mins);
+    sEl.textContent = pad2(secs);
+
+    timerLabel.textContent = future
+      ? "⏳ Do tej chwili zostało jeszcze trochę… 💗"
+      : "⏳ Jesteśmy razem już tyle czasu 💞";
+  }
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
+  // Etap 1 -> 2
+  startBtn.addEventListener("click", () => {
+    stage1.classList.add("hidden");
+    stage2.classList.remove("hidden");
+  });
+
+  // Etap 2: zmiana tekstów na "Nie"
+  let noCount = 0;
+  const noPhrases = ["Nie","Na pewno nie 😏","Spróbuj jeszcze raz","Prawie 😳","No dobrze…"];
+
+  noBtn.addEventListener("click", () => {
+    if(noCount >= noPhrases.length - 1){
+      noBtn.textContent = "Tak <3";
+      noBtn.style.background = "linear-gradient(135deg,#ff4da6,#ff7aa8)";
+      noBtn.style.color = "#120016";
+      noBtn.style.border = "0";
+      noBtn.onclick = goStage3;
+      return;
+    }
+    noBtn.textContent = noPhrases[++noCount];
+  });
+
+  yesBtn.addEventListener("click", goStage3);
+
+  // Życzenia
+  const lines = [
+    "Chcę, żebyś wiedziała, że jesteś moim spokojem i moją radością.",
+    "Każdy dzień z Tobą jest jak małe święto — nawet gdy jest zwyczajny.",
+    "Dziękuję, że jesteś. 💞",
+    "Kocham Cię mocniej niż wczoraj i słabiej niż jutro. 💖"
+  ];
+
+  function showWishes(){
+    wishesBox.classList.remove("hidden");
+    wishesBox.setAttribute("aria-hidden","false");
+    wishesText.innerHTML = "";
+
+    // ✅ dokładnie w chwili pierwszej linijki: muzyka staje się słyszalna
+    fadeTo(music, MUSIC_VOL, 900);
+
+    lines.forEach((t,i)=>{
+      const div = document.createElement("div");
+      div.className = "wLine";
+      div.textContent = t;
+      wishesText.appendChild(div);
+      setTimeout(()=> div.classList.add("show"), i * 650);
+    });
+
+    setTimeout(()=>{
+      bigTimer.classList.remove("hidden");
+      bigTimer.setAttribute("aria-hidden","false");
+    }, lines.length * 650 + 900);
+  }
+
+  // Etap 3
+  function goStage3(){
+    stage2.classList.add("hidden");
+
+    // VIDEO start w geście usera (iOS-safe)
+    bgVideo.style.opacity = 1;
+    bgVideo.play().catch(()=>{});
+
+    // reset UI
+    wishesBox.classList.add("hidden");
+    bigTimer.classList.add("hidden");
+    wishesText.innerHTML = "";
+
+    // AUDIO (iOS-safe): odpalamy w geście, ale na 0 głośności
+    try { music.currentTime = LOOP_START; } catch(e){}
+    music.volume = 0;
+    music.play().catch(()=>{});
+
+    // Po 6.5s pokazujemy życzenia,
+    // a w tej samej chwili muzyka robi się słyszalna
+    setTimeout(showWishes, 6500);
+  }
+
+});
+  </script>
+</body>
+</html>
