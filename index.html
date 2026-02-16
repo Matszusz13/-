@@ -18,13 +18,17 @@
   --accent:#ff4da6;
   --accent2:#ff7aa8;
 
-  --timer-reserved: 220px;
+  --paper:#fff7fb;
+  --paperText:#240018;
+
+  --glass: rgba(0,0,0,.38);
+  --glassBorder: rgba(255,255,255,.18);
+
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
-
 body{
   margin:0;
   overflow:hidden;
@@ -42,7 +46,7 @@ body{
   object-fit:cover;
   z-index:0;
   opacity:0;
-  transition:opacity 1.6s ease;
+  transition:opacity 1.4s ease;
   filter:saturate(1.05) contrast(1.03);
 }
 
@@ -63,7 +67,6 @@ body{
     radial-gradient(900px 600px at 50% 40%, #ff4da61f, transparent 70%),
     linear-gradient(160deg, #0b000e, #230027);
 }
-
 .bigStartBtn{
   width:clamp(210px,60vw,360px);
   height:clamp(210px,60vw,360px);
@@ -79,7 +82,6 @@ body{
   -webkit-tap-highlight-color: transparent;
 }
 .bigStartBtn:active{ transform:scale(.98); }
-
 @keyframes pulse{
   0%{box-shadow:0 18px 65px #ff2f8a55, 0 0 0 0 #ff4da6aa}
   70%{box-shadow:0 18px 65px #ff2f8a55, 0 0 0 35px transparent}
@@ -133,110 +135,449 @@ body{
 /* ===== ETAP 3 UI ===== */
 .ui{ position:fixed; inset:0; z-index:20; pointer-events:none; }
 
-/* ŻYCZENIA: środek + ramka, nigdy nie nachodzą na zegar */
-.wishesBox{
+.note{
+  position:absolute;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(980px,94vw);
+  pointer-events:none;
+
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:18px;
+  padding:12px 14px;
+  color:#ffd0ffef;
+  font-size:clamp(12px,2.7vw,14px);
+  text-align:center;
+  box-shadow:0 22px 70px rgba(0,0,0,.45);
+}
+
+/* ===== LISTY: panel kart (sortowane po dacie) ===== */
+.lettersPanel{
   position:absolute;
   left:50%;
-  top:calc(50% - (var(--timer-reserved) * 0.20));
-  transform:translate(-50%,-50%);
-  width:min(780px,92vw);
+  top:78px;
+  transform:translateX(-50%);
+  width:min(980px,94vw);
+  pointer-events:auto;
 
-  padding:clamp(18px,4vw,34px);
-  border-radius:28px;
-  background:rgba(0,0,0,0.35);
-  border:1px solid rgba(255,255,255,0.20);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  box-shadow:0 22px 70px rgba(0,0,0,0.65);
-  text-align:center;
+  background:var(--glass);
+  border:1px solid var(--glassBorder);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-radius:22px;
+  box-shadow:0 22px 70px rgba(0,0,0,.65);
+  padding:clamp(12px,2.6vw,18px);
 
-  max-height:calc(100vh - var(--timer-reserved) - 28px - var(--safe-bottom));
+  max-height:33vh;
+  overflow:auto;
+}
+.lettersTitle{
+  font-weight:900;
+  margin:0 0 10px;
+  color:#ffd0ffef;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:clamp(14px,2.8vw,18px);
+}
+.lettersGrid{
+  display:grid;
+  /* kolejność: lewo→prawo, potem góra→dół (domyślne auto-flow: row) */
+  grid-auto-flow: row;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width:820px){ .lettersGrid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width:520px){ .lettersGrid{ grid-template-columns:repeat(1, minmax(0,1fr)); } }
+
+.letterCard{
+  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:16px;
+  padding:12px 12px;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  position:relative;
   overflow:hidden;
 }
-.title{
+.letterCard:active{ transform:scale(.99); }
+.cardTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.cardDate{
+  font-size:12px;
+  color:rgba(255,255,255,.82);
+  font-weight:800;
+  white-space:nowrap;
+}
+.cardBadge{
+  font-size:12px;
+  color:#120016;
+  font-weight:900;
+  padding:6px 10px;
+  border-radius:999px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+.cardTitle{
+  margin:10px 0 0;
+  font-weight:900;
+  font-size:clamp(13px,2.9vw,16px);
+  color:#ffe9ffef;
+}
+.cardHint{
+  margin:6px 0 0;
+  font-size:12px;
+  color:#ffd0ffcc;
+}
+
+/* ===== Koperta + list (animacja) ===== */
+.envelopeArea{
+  position:absolute;
+  left:50%;
+  top:52%;
+  transform:translate(-50%,-50%);
+  width:min(740px,94vw);
+  display:grid;
+  place-items:center;
+  pointer-events:auto;
+}
+
+.hint{
+  margin-top:14px;
+  font-size:clamp(12px,2.6vw,15px);
+  color:#ffd0ffdd;
+  text-align:center;
+  opacity:.95;
+  text-shadow:0 10px 30px rgba(0,0,0,.55);
+}
+
+.envelopeWrap{
+  position:relative;
+  width:clamp(280px,70vw,520px);
+  height:clamp(190px,48vw,340px);
+  filter: drop-shadow(0 22px 70px rgba(0,0,0,.65));
+}
+
+/* Papier (list) */
+.letter{
+  position:absolute;
+  left:50%;
+  bottom:18%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:520px;
+  height:80%;
+  background:linear-gradient(180deg, #fff, var(--paper));
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,.08);
+  padding:clamp(14px,3.5vw,22px);
+  color:var(--paperText);
+  overflow:auto;
+  box-shadow:0 12px 35px rgba(0,0,0,.18);
+  z-index:1;
+
+  /* start schowany w kopercie */
+  translate: 0 40%;
+  opacity:0;
+  transition: translate .65s cubic-bezier(.2,.9,.2,1), opacity .35s ease;
+}
+.envelope.open ~ .letter,
+.envelopeWrap.open .letter{
+  translate: 0 -22%;
+  opacity:1;
+}
+
+.letterHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+.letterDate{
+  font-size:12px;
+  color:rgba(0,0,0,.55);
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.letterTitle{
   font-family:"Great Vibes",cursive;
-  font-size:clamp(40px,7vw,72px);
-  margin:0 0 12px;
+  font-size:clamp(34px,7vw,56px);
+  margin:6px 0 10px;
   line-height:1.05;
 }
-.wishesText{
+
+.letterBody{
   font-family:"Cormorant Garamond",serif;
-  font-size:clamp(18px,3vw,28px);
-  line-height:1.5;
-  color:#ffe9ffef;
-  text-shadow:0 10px 30px #00000055;
+  font-size:clamp(16px,3.6vw,22px);
+  line-height:1.55;
 }
-.wLine{
-  opacity:0;
-  transform:translateY(10px);
-  transition:opacity .9s ease, transform .9s ease;
-  margin:10px 0;
-}
-.wLine.show{ opacity:1; transform:none; }
+.letterBody p{ margin:10px 0; }
+
 .signature{
-  margin-top:clamp(10px,2.6vh,18px);
+  margin-top:14px;
   font-family:"Great Vibes",cursive;
-  font-size:clamp(26px,5vw,44px);
-  color:#ffe9fff0;
+  font-size:clamp(22px,5vw,36px);
+  text-align:right;
   opacity:.95;
 }
 
-/* ZEGAR */
-.bigTimer{
+/* Koperta */
+.envelope{
   position:absolute;
-  bottom:calc(clamp(10px,2.6vh,22px) + var(--safe-bottom));
-  left:50%;
-  transform:translateX(-50%);
-  width:min(860px,94vw);
+  inset:0;
+  border-radius:18px;
+  background:linear-gradient(145deg, rgba(255,255,255,.92), rgba(255,255,255,.84));
+  border:1px solid rgba(255,255,255,.40);
+  overflow:hidden;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  z-index:2;
+}
+.envelope:active{ transform:scale(.99); }
 
-  background:rgba(0,0,0,0.38);
-  padding:clamp(10px,2.4vw,16px);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.20);
+/* dolne trójkąty */
+.envBottom:before,
+.envBottom:after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:60%;
+  height:64%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  opacity:.95;
+}
+.envBottom:before{ left:-10%; clip-path:polygon(0 100%, 100% 100%, 100% 0); }
+.envBottom:after{ right:-10%; clip-path:polygon(0 0, 0 100%, 100% 100%); }
+
+/* środkowy trójkąt */
+.envMid{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(255,77,166,.92), rgba(255,122,168,.92));
+  clip-path:polygon(0 100%, 50% 55%, 100% 100%, 50% 100%);
+  opacity:.55;
+}
+
+/* klapka */
+.envFlap{
+  position:absolute;
+  top:-1px;
+  left:-1px;
+  right:-1px;
+  height:65%;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  clip-path:polygon(0 0, 100% 0, 50% 62%);
+  transform-origin:top center;
+  transform:rotateX(0deg);
+  transition: transform .65s cubic-bezier(.2,.9,.2,1);
+  box-shadow:0 12px 30px rgba(0,0,0,.18);
+  z-index:3;
+}
+.envelopeWrap.open .envFlap{ transform:rotateX(165deg); }
+
+/* pieczęć */
+.seal{
+  position:absolute;
+  left:50%;
+  top:58%;
+  transform:translate(-50%,-50%);
+  width:clamp(46px,10vw,66px);
+  height:clamp(46px,10vw,66px);
+  border-radius:50%;
+  background:rgba(255,255,255,.25);
+  border:1px solid rgba(255,255,255,.35);
+  backdrop-filter: blur(8px);
+  display:grid;
+  place-items:center;
+  z-index:4;
+}
+.seal span{ font-size:clamp(18px,4.2vw,28px); }
+
+/* Fade-in koperty po 5s */
+.envelopeArea.hiddenSoft{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.98);
+  pointer-events:none;
+}
+.envelopeArea.showSoft{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+  transition:opacity .7s ease, transform .7s ease;
+}
+
+/* ===== Folder na zdjęcia ===== */
+.folder{
+  position:absolute;
+  left:50%;
+  bottom:calc(14px + var(--safe-bottom));
+  transform:translateX(-50%);
+  width:min(980px,94vw);
+  pointer-events:auto;
+
+  background:var(--glass);
+  border:1px solid var(--glassBorder);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
-  box-shadow:0 22px 70px rgba(0,0,0,0.65);
-  text-align:center;
+  border-radius:22px;
+  box-shadow:0 22px 70px rgba(0,0,0,.65);
+  padding:clamp(12px,2.6vw,18px);
 }
-.timerLabel{
-  font-weight:800;
-  color:#ffd0ffdd;
-  margin-bottom:10px;
-  font-size:clamp(12px,2.6vw,16px);
+
+.folderTitle{
+  font-weight:900;
+  margin:0 0 10px;
+  color:#ffd0ffef;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:clamp(14px,2.8vw,18px);
 }
-.timerGrid{
+
+.photoGrid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+  grid-template-columns:repeat(5,minmax(0,1fr));
   gap:10px;
 }
-.tChip{
-  background:rgba(255,255,255,0.14);
-  padding:clamp(10px,2.2vw,14px);
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.14);
-}
-.tN{ font-size:clamp(18px,4.8vw,40px); font-weight:900; line-height:1.05; }
-.tL{ font-size:clamp(10px,2.2vw,12px); color:var(--muted); margin-top:4px; }
+@media (max-width:700px){ .photoGrid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:420px){ .photoGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
 
-@media (max-width:430px){
-  :root{ --timer-reserved:190px; }
-  .bigTimer{ width:92vw; border-radius:18px; padding:12px; }
-  .timerGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+.thumb{
+  position:relative;
+  border-radius:14px;
+  overflow:hidden;
+  background:rgba(255,255,255,.10);
+  border:1px dashed rgba(255,255,255,.38);
+  aspect-ratio: 1 / 1;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
 }
-@media (max-height:720px){
-  :root{ --timer-reserved:170px; }
-  .bigTimer{ width:92vw; padding:10px; border-radius:18px; }
+.thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  opacity:0; /* pokaże się dopiero gdy się załaduje */
+  transform:scale(1);
+  transition:opacity .35s ease, transform .25s ease;
 }
-@media (max-height:640px){
-  :root{ --timer-reserved:150px; }
-  .timerGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+.thumb.loaded img{ opacity:1; }
+.thumb:hover img{ transform:scale(1.03); }
+
+.thumbLabel{
+  position:absolute;
+  inset:auto 8px 8px 8px;
+  font-size:11px;
+  color:rgba(255,255,255,.9);
+  text-shadow:0 8px 20px rgba(0,0,0,.65);
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+  padding:6px 8px;
+  border-radius:999px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
+
+/* ===== Lightbox fullscreen + nawigacja + slideshow + zoom-from-thumb ===== */
+#lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.82);
+  display:none;
+  place-items:center;
+  z-index:999;
+  cursor:pointer;
+  padding:18px;
+}
+#lightbox.show{ display:grid; }
+
+#lightboxStage{
+  position:relative;
+  width:min(1200px, 96vw);
+  height:92vh;
+  display:grid;
+  place-items:center;
+}
+
+#lightboxImg{
+  max-width:100%;
+  max-height:100%;
+  border-radius:18px;
+  box-shadow:0 30px 90px rgba(0,0,0,.75);
+  will-change: transform, opacity;
+}
+
+/* przyciski */
+.lbBtn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color:#fff;
+  font-size:22px;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  user-select:none;
+}
+.lbBtn:active{ transform:translateY(-50%) scale(.98); }
+#lbPrev{ left:-8px; }
+#lbNext{ right:-8px; }
+
+.lbTopBar{
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  padding:10px 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.lbSmallBtn{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  background:rgba(255,255,255,.14);
+  color:#fff;
+}
+.lbSmallBtn.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#120016;
+}
+#lbCounter{ font-weight:900; color:#ffd0ffef; font-size:13px; padding:0 6px; }
   </style>
 </head>
 
 <body>
 
-  <!-- lokalne tło MP4 -->
   <video id="bgVideo" muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -260,29 +601,67 @@ body{
 
   <!-- ETAP 3 UI -->
   <div class="ui">
-    <div id="wishesBox" class="wishesBox hidden" aria-hidden="true">
-      <h1 class="title">Dla Ciebie 💖</h1>
-      <div id="wishesText" class="wishesText"></div>
-      <div class="signature">– Mateusz</div>
+    <div class="note hidden" id="noteTop">
+      💡 Kliknij kopertę, żeby otworzyć / zamknąć list. List wybierzesz z panelu wyżej. Kliknij zdjęcie, żeby powiększyć (kliknij ponownie, żeby zamknąć). W fullscreen: strzałki ← →, ESC, i pokaz slajdów ▶︎.
     </div>
 
-    <div id="bigTimer" class="bigTimer hidden" aria-hidden="true">
-      <div class="timerLabel" id="timerLabel">⏳</div>
-      <div class="timerGrid">
-        <div class="tChip"><div class="tN" id="d">—</div><div class="tL">dni</div></div>
-        <div class="tChip"><div class="tN" id="h">—</div><div class="tL">godzin</div></div>
-        <div class="tChip"><div class="tN" id="m">—</div><div class="tL">minut</div></div>
-        <div class="tChip"><div class="tN" id="s">—</div><div class="tL">sekund</div></div>
+    <!-- PANEL LISTÓW (sortowane po dacie, układ lewo→prawo, góra→dół) -->
+    <div class="lettersPanel hidden" id="lettersPanel" aria-hidden="true">
+      <div class="lettersTitle">📜 Listy</div>
+      <div class="lettersGrid" id="lettersGrid"></div>
+    </div>
+
+    <!-- KOPERTA -->
+    <div id="envelopeArea" class="envelopeArea hiddenSoft" aria-hidden="true">
+      <div class="envelopeWrap" id="envelopeWrap">
+        <div class="letter" id="letter" aria-hidden="true">
+          <div class="letterHeader">
+            <div class="letterDate" id="letterDate">—</div>
+          </div>
+
+          <div class="letterTitle" id="letterTitle">—</div>
+          <div class="letterBody" id="letterBody"></div>
+          <div class="signature" id="letterSign">—</div>
+        </div>
+
+        <div class="envelope" id="envelope" aria-label="Koperta (kliknij)">
+          <div class="envBottom"></div>
+          <div class="envMid"></div>
+          <div class="envFlap"></div>
+          <div class="seal"><span>💗</span></div>
+        </div>
       </div>
+
+      <div class="hint">Kliknij kopertę 💌</div>
+    </div>
+
+    <!-- FOLDER ZDJĘĆ -->
+    <div class="folder hidden" id="folder" aria-hidden="true">
+      <div class="folderTitle">📂 Nasze zdjęcia</div>
+      <div class="photoGrid" id="photoGrid"></div>
     </div>
   </div>
 
-  <!-- muzyka: od początku do końca, w pętli -->
+  <!-- LIGHTBOX -->
+  <div id="lightbox" aria-hidden="true" title="Kliknij, aby zamknąć">
+    <div id="lightboxStage">
+      <div class="lbTopBar" id="lbTopBar">
+        <button class="lbSmallBtn" id="lbPlay" type="button" title="Start/Stop pokazu">▶︎</button>
+        <div id="lbCounter">—</div>
+        <button class="lbSmallBtn" id="lbClose" type="button" title="Zamknij (ESC)">✕</button>
+      </div>
+      <button class="lbBtn" id="lbPrev" type="button" title="Poprzednie (←)">‹</button>
+      <img id="lightboxImg" alt="Powiększone zdjęcie">
+      <button class="lbBtn" id="lbNext" type="button" title="Następne (→)">›</button>
+    </div>
+  </div>
+
+  <!-- muzyka -->
   <audio id="music" preload="auto" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
-  <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
 
   const stage1 = document.getElementById("stage1");
@@ -294,15 +673,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const bgVideo = document.getElementById("bgVideo");
   const music = document.getElementById("music");
 
-  const wishesBox = document.getElementById("wishesBox");
-  const wishesText = document.getElementById("wishesText");
-  const bigTimer = document.getElementById("bigTimer");
+  const envelopeArea = document.getElementById("envelopeArea");
+  const envelopeWrap = document.getElementById("envelopeWrap");
+  const envelope = document.getElementById("envelope");
+  const letter = document.getElementById("letter");
 
-  const dEl = document.getElementById("d");
-  const hEl = document.getElementById("h");
-  const mEl = document.getElementById("m");
-  const sEl = document.getElementById("s");
-  const timerLabel = document.getElementById("timerLabel");
+  const lettersPanel = document.getElementById("lettersPanel");
+  const lettersGrid = document.getElementById("lettersGrid");
+
+  const folder = document.getElementById("folder");
+  const photoGrid = document.getElementById("photoGrid");
+
+  const noteTop = document.getElementById("noteTop");
+
+  const letterDate = document.getElementById("letterDate");
+  const letterTitle = document.getElementById("letterTitle");
+  const letterBody  = document.getElementById("letterBody");
+  const letterSign  = document.getElementById("letterSign");
+
+  // Lightbox elements
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const lbPrev = document.getElementById("lbPrev");
+  const lbNext = document.getElementById("lbNext");
+  const lbClose = document.getElementById("lbClose");
+  const lbPlay = document.getElementById("lbPlay");
+  const lbCounter = document.getElementById("lbCounter");
 
   // Kliknij / Dotknij
   function isTouch(){
@@ -314,10 +710,8 @@ document.addEventListener("DOMContentLoaded", () => {
   updateStartText();
   addEventListener("resize", updateStartText);
 
-  // Głośność muzyki (możesz zmienić)
+  // Muzyka (głośność)
   const MUSIC_VOL = 0.25;
-
-  // fade
   const clamp01 = (v)=> Math.max(0, Math.min(1, v));
   function fadeTo(el, target, ms=900){
     const to = clamp01(target);
@@ -331,34 +725,6 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(tick);
   }
 
-  // Timer (22.09.2025 17:30)
-  const startDate = new Date(2025, 8, 22, 17, 30, 0);
-  const pad2 = (n)=> String(n).padStart(2,"0");
-
-  function updateTimer(){
-    const now = new Date();
-    let diff = now - startDate;
-    let future = diff < 0;
-    if(future) diff = Math.abs(diff);
-
-    const totalSec = Math.floor(diff/1000);
-    const days = Math.floor(totalSec/86400);
-    const hours = Math.floor((totalSec%86400)/3600);
-    const mins  = Math.floor((totalSec%3600)/60);
-    const secs  = totalSec%60;
-
-    dEl.textContent = days;
-    hEl.textContent = pad2(hours);
-    mEl.textContent = pad2(mins);
-    sEl.textContent = pad2(secs);
-
-    timerLabel.textContent = future
-      ? "⏳ Do tej chwili zostało jeszcze trochę… 💗"
-      : "⏳ Jesteśmy razem już tyle czasu 💞";
-  }
-  setInterval(updateTimer, 1000);
-  updateTimer();
-
   // Etap 1 -> 2
   startBtn.addEventListener("click", () => {
     stage1.classList.add("hidden");
@@ -368,7 +734,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Etap 2: zmiana tekstów na "Nie"
   let noCount = 0;
   const noPhrases = ["Nie","Na pewno nie 😏","Spróbuj jeszcze raz","Prawie 😳","No dobrze…"];
-
   noBtn.addEventListener("click", () => {
     if(noCount >= noPhrases.length - 1){
       noBtn.textContent = "Tak <3";
@@ -383,57 +748,329 @@ document.addEventListener("DOMContentLoaded", () => {
 
   yesBtn.addEventListener("click", goStage3);
 
-  // Życzenia
-  const lines = [
-    "Chcę, żebyś wiedziała, że jesteś moim spokojem i moją radością.",
-    "Każdy dzień z Tobą jest jak małe święto — nawet gdy jest zwyczajny.",
-    "Dziękuję, że jesteś. 💞",
-    "Kocham Cię mocniej niż wczoraj i słabiej niż jutro. 💖"
+  // ===== LISTY: każdy osobno, sortowane po dacie =====
+  // Dodawaj kolejne listy po prostu dopisując obiekt do tej tablicy.
+  const letters = [
+    {
+      id: "bday-2026-02-06",
+      date: "06.02.2026",
+      badge: "🎂 Urodziny",
+      title: "Wszystkiego najlepszego! 🎂💖",
+      body: [
+        "W dniu Twoich urodzin chcę Ci powiedzieć, że jesteś najpiękniejszą częścią mojego świata.",
+        "Życzę Ci spełnienia marzeń, spokoju w sercu i codziennych powodów do uśmiechu — takich, które zostają na długo.",
+        "Niech każdy dzień przynosi Ci dobro, ciepło i ludzi, przy których czujesz się kochana i bezpieczna.",
+        "A ja… obiecuję być obok — wspierać Cię, trzymać za rękę i kochać Cię coraz mocniej. 💞"
+      ],
+      sign: "– Mateusz"
+    },
+    {
+      id: "val-2026-02-14",
+      date: "14.02.2026",
+      badge: "💌 Walentynki",
+      title: "Dla Ciebie 💖",
+      body: [
+        "Chcę, żebyś wiedziała, że jesteś moim spokojem i moją radością.",
+        "Każdy dzień z Tobą jest jak małe święto — nawet gdy jest zwyczajny.",
+        "Dziękuję, że jesteś. 💞",
+        "Kocham Cię mocniej niż wczoraj i słabiej niż jutro. 💖"
+      ],
+      sign: "– Mateusz"
+    }
   ];
 
-  function showWishes(){
-    wishesBox.classList.remove("hidden");
-    wishesBox.setAttribute("aria-hidden","false");
-    wishesText.innerHTML = "";
-
-    lines.forEach((t,i)=>{
-      const div = document.createElement("div");
-      div.className = "wLine";
-      div.textContent = t;
-      wishesText.appendChild(div);
-      setTimeout(()=> div.classList.add("show"), i * 650);
-    });
-
-    setTimeout(()=>{
-      bigTimer.classList.remove("hidden");
-      bigTimer.setAttribute("aria-hidden","false");
-    }, lines.length * 650 + 900);
+  function parsePLDate(d){ // "DD.MM.YYYY"
+    const [dd,mm,yyyy] = d.split(".").map(Number);
+    return new Date(yyyy, mm-1, dd);
   }
 
-  // Etap 3
+  // sort rosnąco po dacie (najstarsze -> najnowsze). Zmień na > jeśli wolisz odwrotnie.
+  letters.sort((a,b)=> parsePLDate(a.date) - parsePLDate(b.date));
+
+  let currentLetterId = letters[letters.length - 1]?.id || null; // domyślnie ostatni (najświeższy)
+
+  function renderLetterById(id){
+    const L = letters.find(x=>x.id === id) || letters[0];
+    currentLetterId = L.id;
+
+    letterDate.textContent = L.date;
+    letterTitle.textContent = L.title;
+    letterSign.textContent = L.sign;
+    letterBody.innerHTML = "";
+    L.body.forEach(t=>{
+      const p = document.createElement("p");
+      p.textContent = t;
+      letterBody.appendChild(p);
+    });
+
+    // podświetlenie karty
+    document.querySelectorAll(".letterCard").forEach(el=>{
+      el.style.outline = (el.dataset.id === L.id) ? "2px solid rgba(255,255,255,.55)" : "none";
+    });
+  }
+
+  function buildLettersGrid(){
+    lettersGrid.innerHTML = "";
+    letters.forEach((L)=>{
+      const card = document.createElement("div");
+      card.className = "letterCard";
+      card.dataset.id = L.id;
+
+      const top = document.createElement("div");
+      top.className = "cardTop";
+
+      const date = document.createElement("div");
+      date.className = "cardDate";
+      date.textContent = L.date;
+
+      const badge = document.createElement("div");
+      badge.className = "cardBadge";
+      badge.textContent = L.badge || "📜 List";
+
+      top.appendChild(date);
+      top.appendChild(badge);
+
+      const title = document.createElement("div");
+      title.className = "cardTitle";
+      title.textContent = L.title;
+
+      const hint = document.createElement("div");
+      hint.className = "cardHint";
+      hint.textContent = "Kliknij, aby włożyć do koperty";
+
+      card.appendChild(top);
+      card.appendChild(title);
+      card.appendChild(hint);
+
+      card.addEventListener("click", ()=>{
+        renderLetterById(L.id);
+        // jeśli koperta jest już otwarta, odświeżamy treść "w locie"
+        // (zostaje otwarta)
+      });
+
+      lettersGrid.appendChild(card);
+    });
+  }
+
+  // ===== ZDJĘCIA (10 szt.) =====
+  // Dla GitHuba (GitHub Pages) wrzuć do folderu photos/ i nazwij dokładnie:
+  // photos/01.jpeg ... photos/10.jpeg
+  const photoFiles = Array.from({length:10}, (_,i)=> `photos/${String(i+1).padStart(2,"0")}.jpeg`);
+
+  let currentPhotoIndex = 0;
+  let slideshowTimer = null;
+  let slideshowOn = false;
+  let lastThumbRect = null;
+
+  function buildPhotos(){
+    photoGrid.innerHTML = "";
+    photoFiles.forEach((src, idx)=>{
+      const div = document.createElement("div");
+      div.className = "thumb";
+      div.setAttribute("role","button");
+      div.setAttribute("tabindex","0");
+      div.setAttribute("aria-label", `Otwórz zdjęcie ${idx+1}`);
+
+      const img = document.createElement("img");
+      img.alt = `Zdjęcie ${idx+1}`;
+      img.src = src;
+
+      img.addEventListener("load", ()=> div.classList.add("loaded"));
+      img.addEventListener("error", ()=> div.classList.remove("loaded"));
+
+      const label = document.createElement("div");
+      label.className = "thumbLabel";
+      label.textContent = src.replace("photos/","");
+
+      const open = ()=>{
+        currentPhotoIndex = idx;
+        lastThumbRect = div.getBoundingClientRect();
+        openLightboxFromThumb();
+      };
+
+      div.addEventListener("click", open);
+      div.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          open();
+        }
+      });
+
+      div.appendChild(img);
+      div.appendChild(label);
+      photoGrid.appendChild(div);
+    });
+  }
+
+  function setCounter(){
+    lbCounter.textContent = `${currentPhotoIndex+1} / ${photoFiles.length}`;
+  }
+
+  function showPhoto(index, animate=false){
+    const safeIndex = (index + photoFiles.length) % photoFiles.length;
+    currentPhotoIndex = safeIndex;
+    lightboxImg.src = photoFiles[currentPhotoIndex];
+    lightboxImg.alt = `Zdjęcie ${currentPhotoIndex+1}`;
+    setCounter();
+
+    if(animate){
+      // delikatne przejście
+      lightboxImg.animate([{opacity:.5, transform:"scale(.985)"},{opacity:1, transform:"scale(1)"}], {duration:180, easing:"ease-out"});
+    }
+  }
+
+  function openLightboxFromThumb(){
+    // włączenie lightbox
+    lightbox.classList.add("show");
+    lightbox.setAttribute("aria-hidden","false");
+    setCounter();
+
+    // ustaw startowy transform (zoom from thumbnail)
+    const imgEl = lightboxImg;
+    const stage = document.getElementById("lightboxStage");
+    const stageRect = stage.getBoundingClientRect();
+
+    // ustaw zdjęcie docelowe
+    imgEl.src = photoFiles[currentPhotoIndex];
+    imgEl.alt = `Zdjęcie ${currentPhotoIndex+1}`;
+
+    // jeśli mamy rect miniatury, animujemy start -> center
+    if(lastThumbRect){
+      // start: pozycja miniatury
+      const startX = lastThumbRect.left + lastThumbRect.width/2;
+      const startY = lastThumbRect.top + lastThumbRect.height/2;
+
+      // center: środek stage
+      const endX = stageRect.left + stageRect.width/2;
+      const endY = stageRect.top + stageRect.height/2;
+
+      const dx = startX - endX;
+      const dy = startY - endY;
+
+      const scale = Math.max(0.12, Math.min(0.35, lastThumbRect.width / stageRect.width));
+
+      imgEl.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      imgEl.style.opacity = "0.0";
+
+      requestAnimationFrame(()=>{
+        imgEl.style.transition = "transform .38s ease, opacity .28s ease";
+        imgEl.style.transform = "translate(0px,0px) scale(1)";
+        imgEl.style.opacity = "1";
+        setTimeout(()=>{
+          imgEl.style.transition = "";
+        }, 420);
+      });
+    } else {
+      imgEl.style.transform = "translate(0,0) scale(1)";
+      imgEl.style.opacity = "1";
+    }
+
+    // start slideshow automatically
+    startSlideshow(true);
+  }
+
+  function closeLightbox(){
+    stopSlideshow(true);
+    lightbox.classList.remove("show");
+    lightbox.setAttribute("aria-hidden","true");
+  }
+
+  function nextPhoto(){ showPhoto(currentPhotoIndex + 1, true); }
+  function prevPhoto(){ showPhoto(currentPhotoIndex - 1, true); }
+
+  lbNext.addEventListener("click", (e)=>{ e.stopPropagation(); nextPhoto(); });
+  lbPrev.addEventListener("click", (e)=>{ e.stopPropagation(); prevPhoto(); });
+
+  lbClose.addEventListener("click", (e)=>{ e.stopPropagation(); closeLightbox(); });
+
+  lightbox.addEventListener("click", closeLightbox);
+
+  addEventListener("keydown", (e)=>{
+    if(!lightbox.classList.contains("show")) return;
+    if(e.key === "Escape") closeLightbox();
+    if(e.key === "ArrowRight") nextPhoto();
+    if(e.key === "ArrowLeft") prevPhoto();
+    if(e.key === " "){
+      e.preventDefault();
+      // toggle slideshow
+      slideshowOn ? stopSlideshow() : startSlideshow();
+    }
+  });
+
+  function startSlideshow(silent=false){
+    slideshowOn = true;
+    lbPlay.classList.add("active");
+    lbPlay.textContent = "❚❚";
+    if(slideshowTimer) clearInterval(slideshowTimer);
+    slideshowTimer = setInterval(()=> nextPhoto(), 3200);
+    if(!silent) {/* no-op */}
+  }
+
+  function stopSlideshow(silent=false){
+    slideshowOn = false;
+    lbPlay.classList.remove("active");
+    lbPlay.textContent = "▶︎";
+    if(slideshowTimer) clearInterval(slideshowTimer);
+    slideshowTimer = null;
+    if(!silent) {/* no-op */}
+  }
+
+  lbPlay.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    slideshowOn ? stopSlideshow() : startSlideshow();
+  });
+
+  // ===== Etap 3 =====
   function goStage3(){
     stage2.classList.add("hidden");
 
-    // VIDEO start w geście usera (iOS-safe)
+    // start video i muzyka w geście usera
     bgVideo.style.opacity = 1;
     bgVideo.play().catch(()=>{});
 
-    // reset UI
-    wishesBox.classList.add("hidden");
-    bigTimer.classList.add("hidden");
-    wishesText.innerHTML = "";
-
-    // ✅ MUZYKA: startuje OD RAZU na etapie 3, od początku, w pętli
     music.currentTime = 0;
     music.volume = 0;
     music.play().catch(()=>{});
     fadeTo(music, MUSIC_VOL, 900);
 
-    // Życzenia po 6.5s
-    setTimeout(showWishes, 6500);
+    // buduj UI
+    buildLettersGrid();
+    renderLetterById(currentLetterId);
+
+    buildPhotos();
+
+    // pokaż panele od razu
+    lettersPanel.classList.remove("hidden");
+    lettersPanel.setAttribute("aria-hidden","false");
+
+    folder.classList.remove("hidden");
+    folder.setAttribute("aria-hidden","false");
+
+    noteTop.classList.remove("hidden");
+
+    // koperta po 5s
+    envelopeArea.classList.remove("showSoft");
+    envelopeArea.classList.add("hiddenSoft");
+    envelopeArea.setAttribute("aria-hidden","true");
+
+    envelopeWrap.classList.remove("open");
+    letter.setAttribute("aria-hidden","true");
+
+    setTimeout(()=>{
+      envelopeArea.classList.remove("hiddenSoft");
+      envelopeArea.classList.add("showSoft");
+      envelopeArea.setAttribute("aria-hidden","false");
+    }, 5000);
   }
 
+  // klik koperty: otwórz / zamknij
+  envelope.addEventListener("click", () => {
+    const willOpen = !envelopeWrap.classList.contains("open");
+    envelopeWrap.classList.toggle("open", willOpen);
+    letter.setAttribute("aria-hidden", String(!willOpen));
+  });
+
 });
-  </script>
+</script>
 </body>
 </html>
