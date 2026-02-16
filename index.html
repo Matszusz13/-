@@ -186,7 +186,7 @@ body{
 }
 .lettersGrid{
   display:grid;
-  /* kolejność: lewo→prawo, potem góra→dół (domyślne auto-flow: row) */
+  /* kolejność: lewo→prawo, potem góra→dół */
   grid-auto-flow: row;
   grid-template-columns:repeat(3, minmax(0,1fr));
   gap:10px;
@@ -238,11 +238,30 @@ body{
   color:#ffd0ffcc;
 }
 
+/* Specjalna karta: "Książka" (zdjęcia) */
+.bookCard{
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.10));
+  border:1px solid rgba(255,255,255,.22);
+}
+.bookCard .cardBadge{
+  background:rgba(255,255,255,.16);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+}
+.bookIcon{
+  font-size:34px;
+  line-height:1;
+  margin-top:6px;
+}
+.bookCard.open{
+  outline:2px solid rgba(255,255,255,.55);
+}
+
 /* ===== Koperta + list (animacja) ===== */
 .envelopeArea{
   position:absolute;
   left:50%;
-  top:52%;
+  top:54%;
   transform:translate(-50%,-50%);
   width:min(740px,94vw);
   display:grid;
@@ -284,12 +303,10 @@ body{
   box-shadow:0 12px 35px rgba(0,0,0,.18);
   z-index:1;
 
-  /* start schowany w kopercie */
   translate: 0 40%;
   opacity:0;
   transition: translate .65s cubic-bezier(.2,.9,.2,1), opacity .35s ease;
 }
-.envelope.open ~ .letter,
 .envelopeWrap.open .letter{
   translate: 0 -22%;
   opacity:1;
@@ -346,7 +363,6 @@ body{
 }
 .envelope:active{ transform:scale(.99); }
 
-/* dolne trójkąty */
 .envBottom:before,
 .envBottom:after{
   content:"";
@@ -360,7 +376,6 @@ body{
 .envBottom:before{ left:-10%; clip-path:polygon(0 100%, 100% 100%, 100% 0); }
 .envBottom:after{ right:-10%; clip-path:polygon(0 0, 0 100%, 100% 100%); }
 
-/* środkowy trójkąt */
 .envMid{
   position:absolute;
   inset:0;
@@ -369,7 +384,6 @@ body{
   opacity:.55;
 }
 
-/* klapka */
 .envFlap{
   position:absolute;
   top:-1px;
@@ -386,7 +400,6 @@ body{
 }
 .envelopeWrap.open .envFlap{ transform:rotateX(165deg); }
 
-/* pieczęć */
 .seal{
   position:absolute;
   left:50%;
@@ -404,7 +417,6 @@ body{
 }
 .seal span{ font-size:clamp(18px,4.2vw,28px); }
 
-/* Fade-in koperty po 5s */
 .envelopeArea.hiddenSoft{
   opacity:0;
   transform:translate(-50%,-50%) scale(.98);
@@ -417,7 +429,7 @@ body{
   transition:opacity .7s ease, transform .7s ease;
 }
 
-/* ===== Folder na zdjęcia ===== */
+/* ===== Folder na zdjęcia (ZWYKLE ZAMKNIĘTY) ===== */
 .folder{
   position:absolute;
   left:50%;
@@ -433,6 +445,15 @@ body{
   border-radius:22px;
   box-shadow:0 22px 70px rgba(0,0,0,.65);
   padding:clamp(12px,2.6vw,18px);
+
+  /* animacja otwórz/zamknij */
+  transition: transform .45s ease, opacity .35s ease;
+  transform:translateX(-50%) translateY(110%);
+  opacity:0;
+}
+.folder.open{
+  transform:translateX(-50%) translateY(0%);
+  opacity:1;
 }
 
 .folderTitle{
@@ -469,7 +490,7 @@ body{
   height:100%;
   object-fit:cover;
   display:block;
-  opacity:0; /* pokaże się dopiero gdy się załaduje */
+  opacity:0;
   transform:scale(1);
   transition:opacity .35s ease, transform .25s ease;
 }
@@ -492,7 +513,7 @@ body{
   white-space:nowrap;
 }
 
-/* ===== Lightbox fullscreen + nawigacja + slideshow + zoom-from-thumb ===== */
+/* ===== Lightbox ===== */
 #lightbox{
   position:fixed;
   inset:0;
@@ -512,7 +533,6 @@ body{
   display:grid;
   place-items:center;
 }
-
 #lightboxImg{
   max-width:100%;
   max-height:100%;
@@ -521,7 +541,6 @@ body{
   will-change: transform, opacity;
 }
 
-/* przyciski */
 .lbBtn{
   position:absolute;
   top:50%;
@@ -602,10 +621,10 @@ body{
   <!-- ETAP 3 UI -->
   <div class="ui">
     <div class="note hidden" id="noteTop">
-      💡 Kliknij kopertę, żeby otworzyć / zamknąć list. List wybierzesz z panelu wyżej. Kliknij zdjęcie, żeby powiększyć (kliknij ponownie, żeby zamknąć). W fullscreen: strzałki ← →, ESC, i pokaz slajdów ▶︎.
+      💡 Panel listów jest u góry. Ikona książki 📖 otwiera / zamyka folder ze zdjęciami. Koperta pojawia się po 5 sekundach. W fullscreen: ← →, ESC, pokaz slajdów ▶︎.
     </div>
 
-    <!-- PANEL LISTÓW (sortowane po dacie, układ lewo→prawo, góra→dół) -->
+    <!-- PANEL LISTÓW -->
     <div class="lettersPanel hidden" id="lettersPanel" aria-hidden="true">
       <div class="lettersTitle">📜 Listy</div>
       <div class="lettersGrid" id="lettersGrid"></div>
@@ -618,7 +637,6 @@ body{
           <div class="letterHeader">
             <div class="letterDate" id="letterDate">—</div>
           </div>
-
           <div class="letterTitle" id="letterTitle">—</div>
           <div class="letterBody" id="letterBody"></div>
           <div class="signature" id="letterSign">—</div>
@@ -631,12 +649,11 @@ body{
           <div class="seal"><span>💗</span></div>
         </div>
       </div>
-
       <div class="hint">Kliknij kopertę 💌</div>
     </div>
 
-    <!-- FOLDER ZDJĘĆ -->
-    <div class="folder hidden" id="folder" aria-hidden="true">
+    <!-- FOLDER ZDJĘĆ (zamknięty pod książką) -->
+    <div class="folder" id="folder" aria-hidden="true">
       <div class="folderTitle">📂 Nasze zdjęcia</div>
       <div class="photoGrid" id="photoGrid"></div>
     </div>
@@ -656,7 +673,6 @@ body{
     </div>
   </div>
 
-  <!-- muzyka -->
   <audio id="music" preload="auto" loop>
     <source src="music.mp3" type="audio/mpeg">
   </audio>
@@ -748,8 +764,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   yesBtn.addEventListener("click", goStage3);
 
-  // ===== LISTY: każdy osobno, sortowane po dacie =====
-  // Dodawaj kolejne listy po prostu dopisując obiekt do tej tablicy.
+  // ===== LISTY =====
   const letters = [
     {
       id: "bday-2026-02-06",
@@ -779,15 +794,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  function parsePLDate(d){ // "DD.MM.YYYY"
+  function parsePLDate(d){
     const [dd,mm,yyyy] = d.split(".").map(Number);
     return new Date(yyyy, mm-1, dd);
   }
-
-  // sort rosnąco po dacie (najstarsze -> najnowsze). Zmień na > jeśli wolisz odwrotnie.
+  // sort rosnąco po dacie
   letters.sort((a,b)=> parsePLDate(a.date) - parsePLDate(b.date));
 
-  let currentLetterId = letters[letters.length - 1]?.id || null; // domyślnie ostatni (najświeższy)
+  let currentLetterId = letters[letters.length - 1]?.id || null;
 
   function renderLetterById(id){
     const L = letters.find(x=>x.id === id) || letters[0];
@@ -796,6 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
     letterDate.textContent = L.date;
     letterTitle.textContent = L.title;
     letterSign.textContent = L.sign;
+
     letterBody.innerHTML = "";
     L.body.forEach(t=>{
       const p = document.createElement("p");
@@ -803,14 +818,218 @@ document.addEventListener("DOMContentLoaded", () => {
       letterBody.appendChild(p);
     });
 
-    // podświetlenie karty
-    document.querySelectorAll(".letterCard").forEach(el=>{
+    document.querySelectorAll(".letterCard[data-id]").forEach(el=>{
       el.style.outline = (el.dataset.id === L.id) ? "2px solid rgba(255,255,255,.55)" : "none";
     });
   }
 
+  // ===== ZDJĘCIA =====
+  const photoFiles = Array.from({length:10}, (_,i)=> `photos/${String(i+1).padStart(2,"0")}.jpeg`);
+
+  let folderOpen = false;
+
+  function toggleFolder(force){
+    folderOpen = (typeof force === "boolean") ? force : !folderOpen;
+    folder.classList.toggle("open", folderOpen);
+    folder.setAttribute("aria-hidden", String(!folderOpen));
+
+    const book = document.getElementById("bookCard");
+    if(book) book.classList.toggle("open", folderOpen);
+  }
+
+  function buildPhotos(){
+    photoGrid.innerHTML = "";
+    photoFiles.forEach((src, idx)=>{
+      const div = document.createElement("div");
+      div.className = "thumb";
+      div.setAttribute("role","button");
+      div.setAttribute("tabindex","0");
+      div.setAttribute("aria-label", `Otwórz zdjęcie ${idx+1}`);
+
+      const img = document.createElement("img");
+      img.alt = `Zdjęcie ${idx+1}`;
+      img.src = src;
+
+      img.addEventListener("load", ()=> div.classList.add("loaded"));
+      img.addEventListener("error", ()=> div.classList.remove("loaded"));
+
+      const label = document.createElement("div");
+      label.className = "thumbLabel";
+      label.textContent = src.replace("photos/","");
+
+      const open = ()=> openLightboxFromThumb(idx, div);
+
+      div.addEventListener("click", open);
+      div.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          open();
+        }
+      });
+
+      div.appendChild(img);
+      div.appendChild(label);
+      photoGrid.appendChild(div);
+    });
+  }
+
+  // ===== Lightbox: nawigacja + slideshow + zoom-from-thumb =====
+  let currentPhotoIndex = 0;
+  let slideshowTimer = null;
+  let slideshowOn = false;
+  let lastThumbRect = null;
+
+  function setCounter(){
+    lbCounter.textContent = `${currentPhotoIndex+1} / ${photoFiles.length}`;
+  }
+
+  function showPhoto(index, animate=false){
+    const safeIndex = (index + photoFiles.length) % photoFiles.length;
+    currentPhotoIndex = safeIndex;
+    lightboxImg.src = photoFiles[currentPhotoIndex];
+    lightboxImg.alt = `Zdjęcie ${currentPhotoIndex+1}`;
+    setCounter();
+
+    if(animate){
+      lightboxImg.animate([{opacity:.5, transform:"scale(.985)"},{opacity:1, transform:"scale(1)"}], {duration:180, easing:"ease-out"});
+    }
+  }
+
+  function openLightboxFromThumb(idx, thumbEl){
+    currentPhotoIndex = idx;
+    lastThumbRect = thumbEl?.getBoundingClientRect?.() || null;
+
+    lightbox.classList.add("show");
+    lightbox.setAttribute("aria-hidden","false");
+
+    const imgEl = lightboxImg;
+    const stage = document.getElementById("lightboxStage");
+    const stageRect = stage.getBoundingClientRect();
+
+    showPhoto(currentPhotoIndex, false);
+
+    if(lastThumbRect){
+      const startX = lastThumbRect.left + lastThumbRect.width/2;
+      const startY = lastThumbRect.top + lastThumbRect.height/2;
+
+      const endX = stageRect.left + stageRect.width/2;
+      const endY = stageRect.top + stageRect.height/2;
+
+      const dx = startX - endX;
+      const dy = startY - endY;
+
+      const scale = Math.max(0.12, Math.min(0.35, lastThumbRect.width / stageRect.width));
+
+      imgEl.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      imgEl.style.opacity = "0.0";
+
+      requestAnimationFrame(()=>{
+        imgEl.style.transition = "transform .38s ease, opacity .28s ease";
+        imgEl.style.transform = "translate(0px,0px) scale(1)";
+        imgEl.style.opacity = "1";
+        setTimeout(()=>{ imgEl.style.transition = ""; }, 420);
+      });
+    } else {
+      imgEl.style.transform = "translate(0,0) scale(1)";
+      imgEl.style.opacity = "1";
+    }
+
+    startSlideshow(true);
+  }
+
+  function closeLightbox(){
+    stopSlideshow(true);
+    lightbox.classList.remove("show");
+    lightbox.setAttribute("aria-hidden","true");
+  }
+
+  function nextPhoto(){ showPhoto(currentPhotoIndex + 1, true); }
+  function prevPhoto(){ showPhoto(currentPhotoIndex - 1, true); }
+
+  lbNext.addEventListener("click", (e)=>{ e.stopPropagation(); nextPhoto(); });
+  lbPrev.addEventListener("click", (e)=>{ e.stopPropagation(); prevPhoto(); });
+
+  lbClose.addEventListener("click", (e)=>{ e.stopPropagation(); closeLightbox(); });
+
+  lightbox.addEventListener("click", closeLightbox);
+
+  addEventListener("keydown", (e)=>{
+    if(!lightbox.classList.contains("show")) return;
+    if(e.key === "Escape") closeLightbox();
+    if(e.key === "ArrowRight") nextPhoto();
+    if(e.key === "ArrowLeft") prevPhoto();
+    if(e.key === " "){
+      e.preventDefault();
+      slideshowOn ? stopSlideshow() : startSlideshow();
+    }
+  });
+
+  function startSlideshow(silent=false){
+    slideshowOn = true;
+    lbPlay.classList.add("active");
+    lbPlay.textContent = "❚❚";
+    if(slideshowTimer) clearInterval(slideshowTimer);
+    slideshowTimer = setInterval(()=> nextPhoto(), 3200);
+  }
+
+  function stopSlideshow(silent=false){
+    slideshowOn = false;
+    lbPlay.classList.remove("active");
+    lbPlay.textContent = "▶︎";
+    if(slideshowTimer) clearInterval(slideshowTimer);
+    slideshowTimer = null;
+  }
+
+  lbPlay.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    slideshowOn ? stopSlideshow() : startSlideshow();
+  });
+
+  // ===== Panel listów: pierwsza karta to "Książka" (zdjęcia) =====
   function buildLettersGrid(){
     lettersGrid.innerHTML = "";
+
+    // 1) książka zawsze na początku (lewo->prawo)
+    const book = document.createElement("div");
+    book.className = "letterCard bookCard";
+    book.id = "bookCard";
+
+    const top = document.createElement("div");
+    top.className = "cardTop";
+
+    const date = document.createElement("div");
+    date.className = "cardDate";
+    date.textContent = "—";
+
+    const badge = document.createElement("div");
+    badge.className = "cardBadge";
+    badge.textContent = "📖 Album";
+
+    top.appendChild(date);
+    top.appendChild(badge);
+
+    const title = document.createElement("div");
+    title.className = "cardTitle";
+    title.textContent = "Nasze zdjęcia";
+
+    const hint = document.createElement("div");
+    hint.className = "cardHint";
+    hint.textContent = "Kliknij, aby otworzyć / zamknąć";
+
+    const ico = document.createElement("div");
+    ico.className = "bookIcon";
+    ico.textContent = "📖";
+
+    book.appendChild(top);
+    book.appendChild(title);
+    book.appendChild(hint);
+    book.appendChild(ico);
+
+    book.addEventListener("click", ()=> toggleFolder());
+
+    lettersGrid.appendChild(book);
+
+    // 2) listy po dacie (lewo->prawo, góra->dół)
     letters.forEach((L)=>{
       const card = document.createElement("div");
       card.className = "letterCard";
@@ -844,187 +1063,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.addEventListener("click", ()=>{
         renderLetterById(L.id);
-        // jeśli koperta jest już otwarta, odświeżamy treść "w locie"
-        // (zostaje otwarta)
       });
 
       lettersGrid.appendChild(card);
     });
+
+    // stan książki
+    toggleFolder(false);
   }
-
-  // ===== ZDJĘCIA (10 szt.) =====
-  // Dla GitHuba (GitHub Pages) wrzuć do folderu photos/ i nazwij dokładnie:
-  // photos/01.jpeg ... photos/10.jpeg
-  const photoFiles = Array.from({length:10}, (_,i)=> `photos/${String(i+1).padStart(2,"0")}.jpeg`);
-
-  let currentPhotoIndex = 0;
-  let slideshowTimer = null;
-  let slideshowOn = false;
-  let lastThumbRect = null;
-
-  function buildPhotos(){
-    photoGrid.innerHTML = "";
-    photoFiles.forEach((src, idx)=>{
-      const div = document.createElement("div");
-      div.className = "thumb";
-      div.setAttribute("role","button");
-      div.setAttribute("tabindex","0");
-      div.setAttribute("aria-label", `Otwórz zdjęcie ${idx+1}`);
-
-      const img = document.createElement("img");
-      img.alt = `Zdjęcie ${idx+1}`;
-      img.src = src;
-
-      img.addEventListener("load", ()=> div.classList.add("loaded"));
-      img.addEventListener("error", ()=> div.classList.remove("loaded"));
-
-      const label = document.createElement("div");
-      label.className = "thumbLabel";
-      label.textContent = src.replace("photos/","");
-
-      const open = ()=>{
-        currentPhotoIndex = idx;
-        lastThumbRect = div.getBoundingClientRect();
-        openLightboxFromThumb();
-      };
-
-      div.addEventListener("click", open);
-      div.addEventListener("keydown", (e)=>{
-        if(e.key === "Enter" || e.key === " "){
-          e.preventDefault();
-          open();
-        }
-      });
-
-      div.appendChild(img);
-      div.appendChild(label);
-      photoGrid.appendChild(div);
-    });
-  }
-
-  function setCounter(){
-    lbCounter.textContent = `${currentPhotoIndex+1} / ${photoFiles.length}`;
-  }
-
-  function showPhoto(index, animate=false){
-    const safeIndex = (index + photoFiles.length) % photoFiles.length;
-    currentPhotoIndex = safeIndex;
-    lightboxImg.src = photoFiles[currentPhotoIndex];
-    lightboxImg.alt = `Zdjęcie ${currentPhotoIndex+1}`;
-    setCounter();
-
-    if(animate){
-      // delikatne przejście
-      lightboxImg.animate([{opacity:.5, transform:"scale(.985)"},{opacity:1, transform:"scale(1)"}], {duration:180, easing:"ease-out"});
-    }
-  }
-
-  function openLightboxFromThumb(){
-    // włączenie lightbox
-    lightbox.classList.add("show");
-    lightbox.setAttribute("aria-hidden","false");
-    setCounter();
-
-    // ustaw startowy transform (zoom from thumbnail)
-    const imgEl = lightboxImg;
-    const stage = document.getElementById("lightboxStage");
-    const stageRect = stage.getBoundingClientRect();
-
-    // ustaw zdjęcie docelowe
-    imgEl.src = photoFiles[currentPhotoIndex];
-    imgEl.alt = `Zdjęcie ${currentPhotoIndex+1}`;
-
-    // jeśli mamy rect miniatury, animujemy start -> center
-    if(lastThumbRect){
-      // start: pozycja miniatury
-      const startX = lastThumbRect.left + lastThumbRect.width/2;
-      const startY = lastThumbRect.top + lastThumbRect.height/2;
-
-      // center: środek stage
-      const endX = stageRect.left + stageRect.width/2;
-      const endY = stageRect.top + stageRect.height/2;
-
-      const dx = startX - endX;
-      const dy = startY - endY;
-
-      const scale = Math.max(0.12, Math.min(0.35, lastThumbRect.width / stageRect.width));
-
-      imgEl.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      imgEl.style.opacity = "0.0";
-
-      requestAnimationFrame(()=>{
-        imgEl.style.transition = "transform .38s ease, opacity .28s ease";
-        imgEl.style.transform = "translate(0px,0px) scale(1)";
-        imgEl.style.opacity = "1";
-        setTimeout(()=>{
-          imgEl.style.transition = "";
-        }, 420);
-      });
-    } else {
-      imgEl.style.transform = "translate(0,0) scale(1)";
-      imgEl.style.opacity = "1";
-    }
-
-    // start slideshow automatically
-    startSlideshow(true);
-  }
-
-  function closeLightbox(){
-    stopSlideshow(true);
-    lightbox.classList.remove("show");
-    lightbox.setAttribute("aria-hidden","true");
-  }
-
-  function nextPhoto(){ showPhoto(currentPhotoIndex + 1, true); }
-  function prevPhoto(){ showPhoto(currentPhotoIndex - 1, true); }
-
-  lbNext.addEventListener("click", (e)=>{ e.stopPropagation(); nextPhoto(); });
-  lbPrev.addEventListener("click", (e)=>{ e.stopPropagation(); prevPhoto(); });
-
-  lbClose.addEventListener("click", (e)=>{ e.stopPropagation(); closeLightbox(); });
-
-  lightbox.addEventListener("click", closeLightbox);
-
-  addEventListener("keydown", (e)=>{
-    if(!lightbox.classList.contains("show")) return;
-    if(e.key === "Escape") closeLightbox();
-    if(e.key === "ArrowRight") nextPhoto();
-    if(e.key === "ArrowLeft") prevPhoto();
-    if(e.key === " "){
-      e.preventDefault();
-      // toggle slideshow
-      slideshowOn ? stopSlideshow() : startSlideshow();
-    }
-  });
-
-  function startSlideshow(silent=false){
-    slideshowOn = true;
-    lbPlay.classList.add("active");
-    lbPlay.textContent = "❚❚";
-    if(slideshowTimer) clearInterval(slideshowTimer);
-    slideshowTimer = setInterval(()=> nextPhoto(), 3200);
-    if(!silent) {/* no-op */}
-  }
-
-  function stopSlideshow(silent=false){
-    slideshowOn = false;
-    lbPlay.classList.remove("active");
-    lbPlay.textContent = "▶︎";
-    if(slideshowTimer) clearInterval(slideshowTimer);
-    slideshowTimer = null;
-    if(!silent) {/* no-op */}
-  }
-
-  lbPlay.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    slideshowOn ? stopSlideshow() : startSlideshow();
-  });
 
   // ===== Etap 3 =====
   function goStage3(){
     stage2.classList.add("hidden");
 
-    // start video i muzyka w geście usera
     bgVideo.style.opacity = 1;
     bgVideo.play().catch(()=>{});
 
@@ -1033,18 +1084,12 @@ document.addEventListener("DOMContentLoaded", () => {
     music.play().catch(()=>{});
     fadeTo(music, MUSIC_VOL, 900);
 
-    // buduj UI
     buildLettersGrid();
     renderLetterById(currentLetterId);
-
     buildPhotos();
 
-    // pokaż panele od razu
     lettersPanel.classList.remove("hidden");
     lettersPanel.setAttribute("aria-hidden","false");
-
-    folder.classList.remove("hidden");
-    folder.setAttribute("aria-hidden","false");
 
     noteTop.classList.remove("hidden");
 
