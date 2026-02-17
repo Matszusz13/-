@@ -341,7 +341,6 @@ body{
 /* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
   width:min(880px, 100%);
-  max-height:100%;
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
@@ -351,7 +350,13 @@ body{
   margin:0 auto;
 
   position:relative; /* dla X */
-  overflow:hidden;    /* bez "wyjeżdżania" treści */
+  overflow:hidden;
+
+  /* dopasowanie do ekranu (JS ustawia zmienne) */
+  transform: scale(var(--paper-scale, 1));
+  transform-origin: center;
+  font-size: inherit;
+
   opacity:1;
   transition: opacity 90s linear; /* 1 min 30 s */
 }
@@ -774,45 +779,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // dopasowanie tekstu do ekranu (bez scrolla w liście)
   function fitPaperToViewport(){
-    // reset do wartości bazowych
+    // Dostępny obszar w którym ma się zmieścić list (po paddingach letterShell)
+    const shell = document.querySelector("#letterModal .letterShell");
+    if(!shell) return;
+
+    // reset: czcionki i skala
     document.documentElement.style.setProperty("--paper-title", "clamp(32px, 7vw, 62px)");
     document.documentElement.style.setProperty("--paper-font",  "clamp(18px, 3.8vw, 26px)");
+    document.documentElement.style.setProperty("--paper-scale", "1");
 
-    // papier jest już widoczny, mierzymy i ewentualnie zmniejszamy
-    const card = letterModal.querySelector(".modalCard");
-    const shell = letterModal.querySelector(".letterShell");
-    const envH = letterModal.querySelector(".envelopeHero")?.getBoundingClientRect().height || 0;
+    // chwilka, żeby przeglądarka przeliczyła layout po resecie
+    // (bez setTimeout - wystarczy reflow)
+    void paper.offsetHeight;
 
-    // ile miejsca na papier? (92vh to max modalCard, ale mamy padding i kopertę)
-    const viewportH = Math.min(window.innerHeight * 0.92, window.innerHeight - 24);
-    const cardStyle = getComputedStyle(card);
-    const padV = parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.paddingBottom);
+    const shellRect = shell.getBoundingClientRect();
+    const availableW = shellRect.width;
+    const availableH = shellRect.height;
 
-    const available = viewportH - padV - envH - 28; // margines
-    if(available < 240) return; // ekstremalnie mało miejsca
+    // Najpierw próbujemy zmniejszyć czcionkę (kilka kroków)
+    let titlePx = 62;
+    let bodyPx  = 26;
 
-    // iteracyjnie zmniejszaj font, jeśli papier przekracza dostępne miejsce
-    // (dla aktualnej zawartości to zwykle 0-3 kroki)
-    let titleMax = 62;
-    let bodyMax  = 26;
-
-    // tymczasowo ustaw "max" jako konkret (łatwiej kontrolować)
-    function applySizes(){
-      document.documentElement.style.setProperty("--paper-title", `${titleMax}px`);
-      document.documentElement.style.setProperty("--paper-font",  `${bodyMax}px`);
+    function applyFonts(){
+      document.documentElement.style.setProperty("--paper-title", `${titlePx}px`);
+      document.documentElement.style.setProperty("--paper-font",  `${bodyPx}px`);
+      void paper.offsetHeight;
     }
 
-    applySizes();
-    // jeśli papier jest większy niż available, zmniejszamy
-    for(let i=0;i<16;i++){
-      const paperRect = paper.getBoundingClientRect();
-      const paperH = paperRect.height;
-      if(paperH <= available) break;
-      // zmniejszaj delikatnie
-      titleMax = Math.max(28, titleMax - 2);
-      bodyMax  = Math.max(14, bodyMax - 1);
-      applySizes();
+    applyFonts();
+
+    // Ustal maksymalny rozmiar listu: nie większy niż dostępny obszar
+    // Mierzymy realny rozmiar (bez skali) przez scrollHeight/scrollWidth.
+    for(let i=0;i<22;i++){
+      const needH = paper.scrollHeight;
+      const needW = paper.scrollWidth;
+      const fits = (needH <= availableH) && (needW <= availableW);
+      if(fits) break;
+
+      // Zmniejszaj delikatnie
+      titlePx = Math.max(26, titlePx - 2);
+      bodyPx  = Math.max(13, bodyPx - 1);
+      applyFonts();
     }
+
+    // Jeśli nadal nie mieści się wysokością/szerokością, skalujemy cały list (bez przesuwania)
+    const needH2 = paper.scrollHeight;
+    const needW2 = paper.scrollWidth;
+
+    const scaleW = availableW / Math.max(needW2, 1);
+    const scaleH = availableH / Math.max(needH2, 1);
+    const scale = Math.min(1, scaleW, scaleH);
+
+    // Lekki margines bezpieczeństwa, żeby nic nie dotykało krawędzi
+    const safeScale = Math.max(0.72, scale * 0.98);
+    document.documentElement.style.setProperty("--paper-scale", String(safeScale));
   }
 
   function openLetter(id){
