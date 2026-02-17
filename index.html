@@ -233,10 +233,13 @@ body{
   position:fixed;
   inset:0;
   height:100dvh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:5vh 5vw;   /* równy odstęp góra/dół i lewa/prawa */
+  display:grid;
+  place-items:center; /* idealne wycentrowanie */
+  /* równy odstęp z każdej strony + bezpieczne marginesy na iPhone */
+  padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-bottom, 0px));
+  padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
+  padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
   box-sizing:border-box;
 }
 
@@ -258,10 +261,13 @@ body{
   position:fixed;
   inset:0;
   height:100dvh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:5vh 5vw;   /* równy odstęp góra/dół i lewa/prawa */
+  display:grid;
+  place-items:center; /* idealne wycentrowanie */
+  /* równy odstęp z każdej strony + bezpieczne marginesy na iPhone */
+  padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-bottom, 0px));
+  padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
+  padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
   box-sizing:border-box;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
@@ -334,8 +340,8 @@ body{
 
 /* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
-  width:min(880px, calc(100vw - 10vw));
-  max-height:calc(100dvh - 10vh);
+  width:min(880px, 100%);
+  max-height:100%;
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
