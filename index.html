@@ -217,23 +217,35 @@ body{
 .modal.show{ display:grid; place-items:center; }
 
 #albumModal{ background:rgba(0,0,0,.78); }
-#letterModal{ background:transparent; }
-
+/* Wycentrowanie koperty i listu: środek w środku ekranu (iOS/Android/PC) */
+#letterModal{
+  background:transparent;
+}
 #letterModal .modalCard{
   width:100%;
-  max-height:none;
-  display:grid;
-  place-items:center;
-}
-#letterModal .letterShell{
-  height:92vh;
+  height:100dvh;              /* dynamiczny viewport (bez skoków na mobile) */
+  max-height:100dvh;
+  background:none;
+  border:none;
+  box-shadow:none;
   padding:0;
+  overflow:visible;
+  display:block;
+}
+/* fixed overlay dokładnie na ekran */
+#letterModal .letterShell{
+  position:fixed;
+  inset:0;
+  height:100dvh;
   display:grid;
   place-items:center;
+  padding:0;
 }
+/* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
 #letterModal .envelopeHero{
   margin:0;
 }
+
 
 
 .modalCard{
