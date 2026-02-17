@@ -342,6 +342,7 @@ body{
 /* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
   width:min(880px, 100%);
+  max-height:100%;
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
@@ -351,16 +352,16 @@ body{
   margin:0 auto;
 
   position:relative; /* dla X */
-  overflow:visible;
-
-  /* dopasowanie do ekranu (JS ustawia zmienne) */
-  transform: translateY(calc(-0.20 * var(--timer-reserved))) scale(var(--paper-scale, 1));
-  transform-origin: center;
-  font-size: inherit;
+  overflow:auto;      /* PROSTY SPOSÓB: list zawsze się mieści, przewijanie tylko w liście */
+  -webkit-overflow-scrolling: touch;
 
   opacity:1;
   transition: opacity 90s linear; /* 1 min 30 s */
 }
+
+/* ukryj pasek przewijania, ale zostaw scroll */
+.paper::-webkit-scrollbar{ width:0; height:0; }
+.paper{ scrollbar-width:none; }
 
 .paper.isHidden{opacity:0;visibility:hidden;pointer-events:none;}
 .paper.show{opacity:1;visibility:visible;}
@@ -690,8 +691,7 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.textContent = isTouch() ? "Dotknij" : "Kliknij";
   }
   updateStartText();
-  addEventListener("resize", updateStartText);
-
+  
   // Muzyka (głośność)
   const MUSIC_VOL = 0.25;
   const clamp01 = (v)=> Math.max(0, Math.min(1, v));
@@ -877,57 +877,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // dopasowanie tekstu do ekranu (bez scrolla w liście)
-  function fitPaperToViewport(){
-    const shell = document.querySelector("#letterModal .letterShell");
-    if(!shell) return;
-
-    // reset
-    document.documentElement.style.setProperty("--paper-title", "clamp(32px, 7vw, 62px)");
-    document.documentElement.style.setProperty("--paper-font",  "clamp(18px, 3.8vw, 26px)");
-    document.documentElement.style.setProperty("--paper-scale", "1");
-
-    void paper.offsetHeight;
-
-    const shellRect = shell.getBoundingClientRect();
-    const availableW = shellRect.width;
-    const availableH = shellRect.height;
-
-    // najpierw czcionki
-    let titlePx = 62;
-    let bodyPx  = 26;
-
-    function applyFonts(){
-      document.documentElement.style.setProperty("--paper-title", `${titlePx}px`);
-      document.documentElement.style.setProperty("--paper-font",  `${bodyPx}px`);
-      void paper.offsetHeight;
-    }
-    applyFonts();
-
-    for(let i=0;i<26;i++){
-      const needH = paper.scrollHeight;
-      const needW = paper.scrollWidth;
-      if(needH <= availableH && needW <= availableW) break;
-      titlePx = Math.max(24, titlePx - 2);
-      bodyPx  = Math.max(12, bodyPx - 1);
-      applyFonts();
-    }
-
-    // skalowanie całej kartki jako finalny krok
-    const needH2 = paper.scrollHeight;
-    const needW2 = paper.scrollWidth;
-
-    const scaleW = availableW / Math.max(needW2, 1);
-    const scaleH = availableH / Math.max(needH2, 1);
-    const scale = Math.min(1, scaleW, scaleH) * 0.98;
-
-    document.documentElement.style.setProperty("--paper-scale", String(Math.max(0.70, scale)));
-  }
-
+  
   function openLetter(id){
     const L = letters.find(x=>x.id === id) || letters[0];
     renderLetter(L);
 
-    // start: list ukryty, potem bardzo powolne pojawienie (90s)
     paper.classList.add("isHidden");
     paper.classList.remove("show");
 
@@ -936,8 +890,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     requestAnimationFrame(()=>{
       paper.classList.remove("isHidden");
-      paper.classList.add("show");
-      setTimeout(fitPaperToViewport, 120);
+      paper.classList.add("show"); // CSS robi fade-in 90s
     });
   }
 
@@ -953,10 +906,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(e.target === letterModal) closeLetterModal();
   });
 
-  addEventListener("resize", ()=>{
-    if(letterModal.classList.contains("show") && !paper.classList.contains("isHidden")){
-      fitPaperToViewport();
-    }
+      }
   });
 
   // ===== ALBUM MODAL (scroll góra/dół) =====
