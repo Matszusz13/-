@@ -18,11 +18,12 @@
   --accent:#ff4da6;
   --accent2:#ff7aa8;
 
+  --glass: rgba(0,0,0,.38);
+  --glass2: rgba(0,0,0,.55);
+  --glassBorder: rgba(255,255,255,.18);
+
   --paper:#fff7fb;
   --paperText:#240018;
-
-  --glass: rgba(0,0,0,.38);
-  --glassBorder: rgba(255,255,255,.18);
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -132,236 +133,138 @@ body{
 .yesBtn{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#120016; }
 .noBtn{ background:#ffffff20; color:var(--text); border:1px solid #ffffff30; }
 
-/* ===== ETAP 3 UI ===== */
-.ui{ position:fixed; inset:0; z-index:20; pointer-events:none; }
-
-.note{
-  position:absolute;
-  top:14px;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(980px,94vw);
+/* ===== ETAP 3 UI (IKONY) ===== */
+.ui{
+  position:fixed;
+  inset:0;
+  z-index:20;
   pointer-events:none;
-
-  background:rgba(0,0,0,.28);
-  border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border-radius:18px;
-  padding:12px 14px;
-  color:#ffd0ffef;
-  font-size:clamp(12px,2.7vw,14px);
-  text-align:center;
-  box-shadow:0 22px 70px rgba(0,0,0,.45);
 }
 
-/* ===== LISTY: panel kart (sortowane po dacie) ===== */
-.lettersPanel{
-  position:absolute;
-  left:50%;
-  top:78px;
-  transform:translateX(-50%);
-  width:min(980px,94vw);
-  pointer-events:auto;
-
-  background:var(--glass);
-  border:1px solid var(--glassBorder);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border-radius:22px;
-  box-shadow:0 22px 70px rgba(0,0,0,.65);
-  padding:clamp(12px,2.6vw,18px);
-
-  max-height:33vh;
-  overflow:auto;
-}
-.lettersTitle{
-  font-weight:900;
-  margin:0 0 10px;
-  color:#ffd0ffef;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:clamp(14px,2.8vw,18px);
-}
-.lettersGrid{
+.iconDock{
+  position:fixed;
+  inset:0;
   display:grid;
-  /* kolejność: lewo→prawo, potem góra→dół */
-  grid-auto-flow: row;
-  grid-template-columns:repeat(3, minmax(0,1fr));
-  gap:10px;
+  place-items:center;
+  z-index:30;
+  pointer-events:auto;
 }
-@media (max-width:820px){ .lettersGrid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
-@media (max-width:520px){ .lettersGrid{ grid-template-columns:repeat(1, minmax(0,1fr)); } }
 
-.letterCard{
-  background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:16px;
-  padding:12px 12px;
+.iconsGrid{
+  width:min(980px, 94vw);
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0,1fr));
+  gap:clamp(14px, 3vw, 26px);
+  padding:clamp(14px, 3vw, 18px);
+}
+@media (max-width:900px){ .iconsGrid{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
+@media (max-width:520px){ .iconsGrid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+
+.appIcon{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  opacity:0;
+  transform:translateY(10px) scale(.985);
+  animation: appIn .65s ease forwards;
+}
+@keyframes appIn{
+  to { opacity:1; transform:translateY(0) scale(1); }
+}
+.iconBtn{
+  width:clamp(78px, 16vw, 108px);
+  height:clamp(78px, 16vw, 108px);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.22);
+  background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.08));
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display:grid;
+  place-items:center;
   cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color: transparent;
-  position:relative;
-  overflow:hidden;
 }
-.letterCard:active{ transform:scale(.99); }
-.cardTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-}
-.cardDate{
-  font-size:12px;
-  color:rgba(255,255,255,.82);
-  font-weight:800;
-  white-space:nowrap;
-}
-.cardBadge{
-  font-size:12px;
-  color:#120016;
+.iconBtn:active{ transform:scale(.98); }
+.iconEmoji{ font-size:40px; line-height:1; }
+.iconLabel{
   font-weight:900;
-  padding:6px 10px;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-}
-.cardTitle{
-  margin:10px 0 0;
-  font-weight:900;
-  font-size:clamp(13px,2.9vw,16px);
   color:#ffe9ffef;
-}
-.cardHint{
-  margin:6px 0 0;
-  font-size:12px;
-  color:#ffd0ffcc;
-}
-
-/* Specjalna karta: "Książka" (zdjęcia) */
-.bookCard{
-  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.10));
-  border:1px solid rgba(255,255,255,.22);
-}
-.bookCard .cardBadge{
-  background:rgba(255,255,255,.16);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.18);
-}
-.bookIcon{
-  font-size:34px;
-  line-height:1;
-  margin-top:6px;
-}
-.bookCard.open{
-  outline:2px solid rgba(255,255,255,.55);
-}
-
-/* ===== Koperta + list (animacja) ===== */
-.envelopeArea{
-  position:absolute;
-  left:50%;
-  top:54%;
-  transform:translate(-50%,-50%);
-  width:min(740px,94vw);
-  display:grid;
-  place-items:center;
-  pointer-events:auto;
-}
-
-.hint{
-  margin-top:14px;
-  font-size:clamp(12px,2.6vw,15px);
-  color:#ffd0ffdd;
+  font-size:clamp(12px, 2.8vw, 14px);
   text-align:center;
-  opacity:.95;
   text-shadow:0 10px 30px rgba(0,0,0,.55);
 }
 
-.envelopeWrap{
-  position:relative;
-  width:clamp(280px,70vw,520px);
-  height:clamp(190px,48vw,340px);
-  filter: drop-shadow(0 22px 70px rgba(0,0,0,.65));
+/* ===== MODALE ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.78);
+  z-index:200;
+  display:none;
+  pointer-events:auto;
 }
+.modal.show{ display:grid; place-items:center; }
 
-/* Papier (list) */
-.letter{
-  position:absolute;
-  left:50%;
-  bottom:18%;
-  transform:translateX(-50%);
-  width:92%;
-  max-width:520px;
-  height:80%;
-  background:linear-gradient(180deg, #fff, var(--paper));
-  border-radius:16px;
-  border:1px solid rgba(0,0,0,.08);
-  padding:clamp(14px,3.5vw,22px);
-  color:var(--paperText);
+.modalCard{
+  width:min(980px, 94vw);
+  max-height:92vh;
   overflow:auto;
-  box-shadow:0 12px 35px rgba(0,0,0,.18);
-  z-index:1;
-
-  translate: 0 40%;
-  opacity:0;
-  transition: translate .65s cubic-bezier(.2,.9,.2,1), opacity .35s ease;
-}
-.envelopeWrap.open .letter{
-  translate: 0 -22%;
-  opacity:1;
+  background:var(--glass2);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:0 30px 100px rgba(0,0,0,.70);
+  padding:clamp(14px, 3vw, 20px);
+  position:relative;
 }
 
-.letterHeader{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
+/* Zamknij */
+.closeBtn{
+  position:sticky;
+  top:10px;
+  float:right;
+  z-index:5;
+  border:none;
+  cursor:pointer;
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
 }
-.letterDate{
-  font-size:12px;
-  color:rgba(0,0,0,.55);
-  font-weight:800;
-  white-space:nowrap;
+.closeBtn:active{ transform:scale(.98); }
+
+/* ===== List modal ===== */
+.letterShell{
+  width:100%;
+  display:grid;
+  place-items:center;
+  padding:8px 0 18px;
 }
 
-.letterTitle{
-  font-family:"Great Vibes",cursive;
-  font-size:clamp(34px,7vw,56px);
-  margin:6px 0 10px;
-  line-height:1.05;
+.envelopeHero{
+  width:min(560px, 92vw);
+  height:clamp(170px, 34vw, 280px);
+  position:relative;
+  margin:6px auto 14px;
+  filter: drop-shadow(0 22px 70px rgba(0,0,0,.55));
 }
 
-.letterBody{
-  font-family:"Cormorant Garamond",serif;
-  font-size:clamp(16px,3.6vw,22px);
-  line-height:1.55;
-}
-.letterBody p{ margin:10px 0; }
-
-.signature{
-  margin-top:14px;
-  font-family:"Great Vibes",cursive;
-  font-size:clamp(22px,5vw,36px);
-  text-align:right;
-  opacity:.95;
-}
-
-/* Koperta */
-.envelope{
+.env{
   position:absolute;
   inset:0;
   border-radius:18px;
   background:linear-gradient(145deg, rgba(255,255,255,.92), rgba(255,255,255,.84));
   border:1px solid rgba(255,255,255,.40);
   overflow:hidden;
-  cursor:pointer;
-  user-select:none;
-  -webkit-tap-highlight-color: transparent;
-  z-index:2;
 }
-.envelope:active{ transform:scale(.99); }
 
 .envBottom:before,
 .envBottom:after{
@@ -396,94 +299,110 @@ body{
   transform:rotateX(0deg);
   transition: transform .65s cubic-bezier(.2,.9,.2,1);
   box-shadow:0 12px 30px rgba(0,0,0,.18);
-  z-index:3;
 }
-.envelopeWrap.open .envFlap{ transform:rotateX(165deg); }
+.env.open .envFlap{ transform:rotateX(165deg); }
 
 .seal{
   position:absolute;
   left:50%;
   top:58%;
   transform:translate(-50%,-50%);
-  width:clamp(46px,10vw,66px);
-  height:clamp(46px,10vw,66px);
+  width:58px;
+  height:58px;
   border-radius:50%;
   background:rgba(255,255,255,.25);
   border:1px solid rgba(255,255,255,.35);
   backdrop-filter: blur(8px);
   display:grid;
   place-items:center;
-  z-index:4;
 }
-.seal span{ font-size:clamp(18px,4.2vw,28px); }
+.seal span{ font-size:24px; }
 
-.envelopeArea.hiddenSoft{
-  opacity:0;
-  transform:translate(-50%,-50%) scale(.98);
-  pointer-events:none;
-}
-.envelopeArea.showSoft{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-  pointer-events:auto;
-  transition:opacity .7s ease, transform .7s ease;
-}
-
-/* ===== Folder na zdjęcia (ZWYKLE ZAMKNIĘTY) ===== */
-.folder{
-  position:absolute;
-  left:50%;
-  bottom:calc(14px + var(--safe-bottom));
-  transform:translateX(-50%);
-  width:min(980px,94vw);
-  pointer-events:auto;
-
-  background:var(--glass);
-  border:1px solid var(--glassBorder);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+/* Papier: pełna szerokość, nie zasłaniane */
+.paper{
+  width:min(880px, 94vw);
+  background:linear-gradient(180deg, #fff, var(--paper));
+  color:var(--paperText);
   border-radius:22px;
-  box-shadow:0 22px 70px rgba(0,0,0,.65);
-  padding:clamp(12px,2.6vw,18px);
-
-  /* animacja otwórz/zamknij */
-  transition: transform .45s ease, opacity .35s ease;
-  transform:translateX(-50%) translateY(110%);
-  opacity:0;
-}
-.folder.open{
-  transform:translateX(-50%) translateY(0%);
-  opacity:1;
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 14px 45px rgba(0,0,0,.20);
+  padding:clamp(16px, 3.6vw, 28px);
 }
 
-.folderTitle{
-  font-weight:900;
-  margin:0 0 10px;
-  color:#ffd0ffef;
+.paperTop{
   display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:clamp(14px,2.8vw,18px);
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.paperDate{
+  font-size:12px;
+  color:rgba(0,0,0,.55);
+  font-weight:900;
+}
+.paperTitle{
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(34px, 7vw, 62px);
+  margin:8px 0 6px;
+  line-height:1.05;
+}
+.paperBody{
+  font-family:"Cormorant Garamond",serif;
+  font-size:clamp(18px, 3.8vw, 26px);
+  line-height:1.55;
+}
+.paperBody p{ margin:10px 0; }
+.paperSign{
+  margin-top:14px;
+  font-family:"Great Vibes",cursive;
+  font-size:clamp(22px, 5vw, 40px);
+  text-align:right;
 }
 
-.photoGrid{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:10px;
+/* ===== Album modal (scroll góra/dół) ===== */
+.albumWrap{
+  width:min(980px, 94vw);
+  margin:0 auto;
 }
-@media (max-width:700px){ .photoGrid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-@media (max-width:420px){ .photoGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.albumTitle{
+  font-weight:900;
+  font-size:clamp(16px, 3.2vw, 18px);
+  margin:0 0 12px;
+  color:#ffd0ffef;
+}
+.albumScroller{
+  max-height:72vh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding-right:6px;
+}
+.albumGrid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width:700px){ .albumGrid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width:420px){ .albumGrid{ grid-template-columns:repeat(1, minmax(0,1fr)); } }
 
 .thumb{
-  position:relative;
-  border-radius:14px;
+  border-radius:18px;
   overflow:hidden;
+  position:relative;
   background:rgba(255,255,255,.10);
-  border:1px dashed rgba(255,255,255,.38);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 14px 40px rgba(0,0,0,.35);
   aspect-ratio: 1 / 1;
   cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color: transparent;
+}
+.thumb::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.10);
+  pointer-events:none;
 }
 .thumb img{
   width:100%;
@@ -497,27 +416,11 @@ body{
 .thumb.loaded img{ opacity:1; }
 .thumb:hover img{ transform:scale(1.03); }
 
-.thumbLabel{
-  position:absolute;
-  inset:auto 8px 8px 8px;
-  font-size:11px;
-  color:rgba(255,255,255,.9);
-  text-shadow:0 8px 20px rgba(0,0,0,.65);
-  background:rgba(0,0,0,.25);
-  border:1px solid rgba(255,255,255,.18);
-  backdrop-filter: blur(8px);
-  padding:6px 8px;
-  border-radius:999px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
-/* ===== Lightbox ===== */
+/* ===== Lightbox: tylko fullscreen + zamknij ===== */
 #lightbox{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.82);
+  background:rgba(0,0,0,.86);
   display:none;
   place-items:center;
   z-index:999;
@@ -525,78 +428,16 @@ body{
   padding:18px;
 }
 #lightbox.show{ display:grid; }
-
-#lightboxStage{
-  position:relative;
-  width:min(1200px, 96vw);
-  height:92vh;
-  display:grid;
-  place-items:center;
-}
-#lightboxImg{
-  max-width:100%;
-  max-height:100%;
-  border-radius:18px;
+#lightbox img{
+  max-width:min(1200px, 96vw);
+  max-height:92vh;
+  border-radius:22px;
   box-shadow:0 30px 90px rgba(0,0,0,.75);
-  will-change: transform, opacity;
 }
-
-.lbBtn{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(0,0,0,.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color:#fff;
-  font-size:22px;
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  user-select:none;
-}
-.lbBtn:active{ transform:translateY(-50%) scale(.98); }
-#lbPrev{ left:-8px; }
-#lbNext{ right:-8px; }
-
-.lbTopBar{
-  position:absolute;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:999px;
-  padding:10px 12px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.lbSmallBtn{
-  border:none;
-  cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
-  font-weight:900;
-  background:rgba(255,255,255,.14);
-  color:#fff;
-}
-.lbSmallBtn.active{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#120016;
-}
-#lbCounter{ font-weight:900; color:#ffd0ffef; font-size:13px; padding:0 6px; }
   </style>
 </head>
 
 <body>
-
   <video id="bgVideo" muted loop playsinline preload="auto">
     <source src="background.mp4" type="video/mp4">
   </video>
@@ -618,59 +459,56 @@ body{
     </div>
   </div>
 
-  <!-- ETAP 3 UI -->
+  <!-- ETAP 3 -->
   <div class="ui">
-    <div class="note hidden" id="noteTop">
-      💡 Panel listów jest u góry. Ikona książki 📖 otwiera / zamyka folder ze zdjęciami. Koperta pojawia się po 5 sekundach. W fullscreen: ← →, ESC, pokaz slajdów ▶︎.
+    <div class="iconDock hidden" id="iconDock" aria-hidden="true">
+      <div class="iconsGrid" id="iconsGrid"></div>
     </div>
+  </div>
 
-    <!-- PANEL LISTÓW -->
-    <div class="lettersPanel hidden" id="lettersPanel" aria-hidden="true">
-      <div class="lettersTitle">📜 Listy</div>
-      <div class="lettersGrid" id="lettersGrid"></div>
-    </div>
+  <!-- MODAL: LIST -->
+  <div class="modal" id="letterModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true">
+      <button class="closeBtn" id="closeLetter" type="button">✕</button>
 
-    <!-- KOPERTA -->
-    <div id="envelopeArea" class="envelopeArea hiddenSoft" aria-hidden="true">
-      <div class="envelopeWrap" id="envelopeWrap">
-        <div class="letter" id="letter" aria-hidden="true">
-          <div class="letterHeader">
-            <div class="letterDate" id="letterDate">—</div>
+      <div class="letterShell">
+        <div class="envelopeHero">
+          <div class="env" id="envAnim">
+            <div class="envBottom"></div>
+            <div class="envMid"></div>
+            <div class="envFlap"></div>
+            <div class="seal"><span>💗</span></div>
           </div>
-          <div class="letterTitle" id="letterTitle">—</div>
-          <div class="letterBody" id="letterBody"></div>
-          <div class="signature" id="letterSign">—</div>
         </div>
 
-        <div class="envelope" id="envelope" aria-label="Koperta (kliknij)">
-          <div class="envBottom"></div>
-          <div class="envMid"></div>
-          <div class="envFlap"></div>
-          <div class="seal"><span>💗</span></div>
+        <div class="paper" id="paper">
+          <div class="paperTop">
+            <div class="paperDate" id="paperDate">—</div>
+          </div>
+          <div class="paperTitle" id="paperTitle">—</div>
+          <div class="paperBody" id="paperBody"></div>
+          <div class="paperSign" id="paperSign">—</div>
         </div>
       </div>
-      <div class="hint">Kliknij kopertę 💌</div>
     </div>
+  </div>
 
-    <!-- FOLDER ZDJĘĆ (zamknięty pod książką) -->
-    <div class="folder" id="folder" aria-hidden="true">
-      <div class="folderTitle">📂 Nasze zdjęcia</div>
-      <div class="photoGrid" id="photoGrid"></div>
+  <!-- MODAL: ALBUM -->
+  <div class="modal" id="albumModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true">
+      <button class="closeBtn" id="closeAlbum" type="button">✕</button>
+      <div class="albumWrap">
+        <div class="albumTitle">Album</div>
+        <div class="albumScroller" id="albumScroller">
+          <div class="albumGrid" id="albumGrid"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- LIGHTBOX -->
   <div id="lightbox" aria-hidden="true" title="Kliknij, aby zamknąć">
-    <div id="lightboxStage">
-      <div class="lbTopBar" id="lbTopBar">
-        <button class="lbSmallBtn" id="lbPlay" type="button" title="Start/Stop pokazu">▶︎</button>
-        <div id="lbCounter">—</div>
-        <button class="lbSmallBtn" id="lbClose" type="button" title="Zamknij (ESC)">✕</button>
-      </div>
-      <button class="lbBtn" id="lbPrev" type="button" title="Poprzednie (←)">‹</button>
-      <img id="lightboxImg" alt="Powiększone zdjęcie">
-      <button class="lbBtn" id="lbNext" type="button" title="Następne (→)">›</button>
-    </div>
+    <img id="lightboxImg" alt="Powiększone zdjęcie">
   </div>
 
   <audio id="music" preload="auto" loop>
@@ -689,32 +527,27 @@ document.addEventListener("DOMContentLoaded", () => {
   const bgVideo = document.getElementById("bgVideo");
   const music = document.getElementById("music");
 
-  const envelopeArea = document.getElementById("envelopeArea");
-  const envelopeWrap = document.getElementById("envelopeWrap");
-  const envelope = document.getElementById("envelope");
-  const letter = document.getElementById("letter");
+  const iconDock = document.getElementById("iconDock");
+  const iconsGrid = document.getElementById("iconsGrid");
 
-  const lettersPanel = document.getElementById("lettersPanel");
-  const lettersGrid = document.getElementById("lettersGrid");
+  // Modals
+  const letterModal = document.getElementById("letterModal");
+  const albumModal = document.getElementById("albumModal");
+  const closeLetter = document.getElementById("closeLetter");
+  const closeAlbum = document.getElementById("closeAlbum");
 
-  const folder = document.getElementById("folder");
-  const photoGrid = document.getElementById("photoGrid");
+  const envAnim = document.getElementById("envAnim");
+  const paperDate = document.getElementById("paperDate");
+  const paperTitle = document.getElementById("paperTitle");
+  const paperBody  = document.getElementById("paperBody");
+  const paperSign  = document.getElementById("paperSign");
 
-  const noteTop = document.getElementById("noteTop");
+  // Album grid
+  const albumGrid = document.getElementById("albumGrid");
 
-  const letterDate = document.getElementById("letterDate");
-  const letterTitle = document.getElementById("letterTitle");
-  const letterBody  = document.getElementById("letterBody");
-  const letterSign  = document.getElementById("letterSign");
-
-  // Lightbox elements
+  // Lightbox
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
-  const lbPrev = document.getElementById("lbPrev");
-  const lbNext = document.getElementById("lbNext");
-  const lbClose = document.getElementById("lbClose");
-  const lbPlay = document.getElementById("lbPlay");
-  const lbCounter = document.getElementById("lbCounter");
 
   // Kliknij / Dotknij
   function isTouch(){
@@ -764,12 +597,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   yesBtn.addEventListener("click", goStage3);
 
-  // ===== LISTY =====
+  // ===== LISTY (osobne) =====
   const letters = [
     {
       id: "bday-2026-02-06",
       date: "06.02.2026",
-      badge: "🎂 Urodziny",
+      emoji: "🎂",
       title: "Wszystkiego najlepszego! 🎂💖",
       body: [
         "W dniu Twoich urodzin chcę Ci powiedzieć, że jesteś najpiękniejszą częścią mojego świata.",
@@ -782,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       id: "val-2026-02-14",
       date: "14.02.2026",
-      badge: "💌 Walentynki",
+      emoji: "💌",
       title: "Dla Ciebie 💖",
       body: [
         "Chcę, żebyś wiedziała, że jesteś moim spokojem i moją radością.",
@@ -801,44 +634,105 @@ document.addEventListener("DOMContentLoaded", () => {
   // sort rosnąco po dacie
   letters.sort((a,b)=> parsePLDate(a.date) - parsePLDate(b.date));
 
-  let currentLetterId = letters[letters.length - 1]?.id || null;
+  // ===== ZDJĘCIA (10 szt.) =====
+  const photoFiles = Array.from({length:10}, (_,i)=> `photos/${String(i+1).padStart(2,"0")}.jpeg`);
 
-  function renderLetterById(id){
-    const L = letters.find(x=>x.id === id) || letters[0];
-    currentLetterId = L.id;
+  // ===== IKONY jak na telefonie =====
+  function buildIcons(){
+    iconsGrid.innerHTML = "";
 
-    letterDate.textContent = L.date;
-    letterTitle.textContent = L.title;
-    letterSign.textContent = L.sign;
+    // Album zawsze pierwszy
+    const albumIcon = makeAppIcon({
+      id: "album",
+      emoji: "📖",
+      label: "Album",
+      onClick: openAlbum
+    }, 0);
+    iconsGrid.appendChild(albumIcon);
 
-    letterBody.innerHTML = "";
+    // Potem listy (kolejność po dacie), lewo->prawo, góra->dół
+    letters.forEach((L, i)=>{
+      const node = makeAppIcon({
+        id: L.id,
+        emoji: L.emoji || "💌",
+        label: L.date, // pod ikoną data
+        onClick: ()=> openLetter(L.id)
+      }, i+1);
+      iconsGrid.appendChild(node);
+    });
+  }
+
+  function makeAppIcon({id, emoji, label, onClick}, index){
+    const wrap = document.createElement("div");
+    wrap.className = "appIcon";
+    wrap.style.animationDelay = (index * 0.14) + "s";
+
+    const btn = document.createElement("button");
+    btn.className = "iconBtn";
+    btn.type = "button";
+    btn.setAttribute("aria-label", label);
+    btn.dataset.id = id;
+
+    const em = document.createElement("div");
+    em.className = "iconEmoji";
+    em.textContent = emoji;
+
+    const lab = document.createElement("div");
+    lab.className = "iconLabel";
+    lab.textContent = label;
+
+    btn.appendChild(em);
+    wrap.appendChild(btn);
+    wrap.appendChild(lab);
+
+    btn.addEventListener("click", onClick);
+
+    return wrap;
+  }
+
+  // ===== LIST MODAL =====
+  function renderLetter(L){
+    paperDate.textContent = L.date;
+    paperTitle.textContent = L.title;
+    paperSign.textContent = L.sign;
+
+    paperBody.innerHTML = "";
     L.body.forEach(t=>{
       const p = document.createElement("p");
       p.textContent = t;
-      letterBody.appendChild(p);
-    });
-
-    document.querySelectorAll(".letterCard[data-id]").forEach(el=>{
-      el.style.outline = (el.dataset.id === L.id) ? "2px solid rgba(255,255,255,.55)" : "none";
+      paperBody.appendChild(p);
     });
   }
 
-  // ===== ZDJĘCIA =====
-  const photoFiles = Array.from({length:10}, (_,i)=> `photos/${String(i+1).padStart(2,"0")}.jpeg`);
+  function openLetter(id){
+    const L = letters.find(x=>x.id === id) || letters[0];
+    renderLetter(L);
 
-  let folderOpen = false;
+    // reset anim
+    envAnim.classList.remove("open");
+    letterModal.classList.add("show");
+    letterModal.setAttribute("aria-hidden","false");
 
-  function toggleFolder(force){
-    folderOpen = (typeof force === "boolean") ? force : !folderOpen;
-    folder.classList.toggle("open", folderOpen);
-    folder.setAttribute("aria-hidden", String(!folderOpen));
-
-    const book = document.getElementById("bookCard");
-    if(book) book.classList.toggle("open", folderOpen);
+    // animacja koperty (otwarcie) dopiero po kliknięciu
+    requestAnimationFrame(()=>{
+      setTimeout(()=> envAnim.classList.add("open"), 120);
+    });
   }
 
-  function buildPhotos(){
-    photoGrid.innerHTML = "";
+  function closeLetterModal(){
+    letterModal.classList.remove("show");
+    letterModal.setAttribute("aria-hidden","true");
+    envAnim.classList.remove("open");
+  }
+
+  closeLetter.addEventListener("click", (e)=>{ e.stopPropagation(); closeLetterModal(); });
+  letterModal.addEventListener("click", (e)=>{
+    if(e.target === letterModal) closeLetterModal();
+  });
+
+  // ===== ALBUM MODAL (scroll góra/dół) =====
+  function buildAlbum(){
+    albumGrid.innerHTML = "";
     photoFiles.forEach((src, idx)=>{
       const div = document.createElement("div");
       div.className = "thumb";
@@ -849,16 +743,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = document.createElement("img");
       img.alt = `Zdjęcie ${idx+1}`;
       img.src = src;
-
       img.addEventListener("load", ()=> div.classList.add("loaded"));
       img.addEventListener("error", ()=> div.classList.remove("loaded"));
 
-      const label = document.createElement("div");
-      label.className = "thumbLabel";
-      label.textContent = src.replace("photos/","");
-
-      const open = ()=> openLightboxFromThumb(idx, div);
-
+      const open = ()=> openLightbox(src, img.alt);
       div.addEventListener("click", open);
       div.addEventListener("keydown", (e)=>{
         if(e.key === "Enter" || e.key === " "){
@@ -868,214 +756,50 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       div.appendChild(img);
-      div.appendChild(label);
-      photoGrid.appendChild(div);
+      albumGrid.appendChild(div);
     });
   }
 
-  // ===== Lightbox: nawigacja + slideshow + zoom-from-thumb =====
-  let currentPhotoIndex = 0;
-  let slideshowTimer = null;
-  let slideshowOn = false;
-  let lastThumbRect = null;
-
-  function setCounter(){
-    lbCounter.textContent = `${currentPhotoIndex+1} / ${photoFiles.length}`;
+  function openAlbum(){
+    albumModal.classList.add("show");
+    albumModal.setAttribute("aria-hidden","false");
   }
 
-  function showPhoto(index, animate=false){
-    const safeIndex = (index + photoFiles.length) % photoFiles.length;
-    currentPhotoIndex = safeIndex;
-    lightboxImg.src = photoFiles[currentPhotoIndex];
-    lightboxImg.alt = `Zdjęcie ${currentPhotoIndex+1}`;
-    setCounter();
-
-    if(animate){
-      lightboxImg.animate([{opacity:.5, transform:"scale(.985)"},{opacity:1, transform:"scale(1)"}], {duration:180, easing:"ease-out"});
-    }
+  function closeAlbumModal(){
+    albumModal.classList.remove("show");
+    albumModal.setAttribute("aria-hidden","true");
   }
 
-  function openLightboxFromThumb(idx, thumbEl){
-    currentPhotoIndex = idx;
-    lastThumbRect = thumbEl?.getBoundingClientRect?.() || null;
+  closeAlbum.addEventListener("click", (e)=>{ e.stopPropagation(); closeAlbumModal(); });
+  albumModal.addEventListener("click", (e)=>{
+    if(e.target === albumModal) closeAlbumModal();
+  });
 
+  // ===== LIGHTBOX =====
+  function openLightbox(src, alt){
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || "Zdjęcie";
     lightbox.classList.add("show");
     lightbox.setAttribute("aria-hidden","false");
-
-    const imgEl = lightboxImg;
-    const stage = document.getElementById("lightboxStage");
-    const stageRect = stage.getBoundingClientRect();
-
-    showPhoto(currentPhotoIndex, false);
-
-    if(lastThumbRect){
-      const startX = lastThumbRect.left + lastThumbRect.width/2;
-      const startY = lastThumbRect.top + lastThumbRect.height/2;
-
-      const endX = stageRect.left + stageRect.width/2;
-      const endY = stageRect.top + stageRect.height/2;
-
-      const dx = startX - endX;
-      const dy = startY - endY;
-
-      const scale = Math.max(0.12, Math.min(0.35, lastThumbRect.width / stageRect.width));
-
-      imgEl.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      imgEl.style.opacity = "0.0";
-
-      requestAnimationFrame(()=>{
-        imgEl.style.transition = "transform .38s ease, opacity .28s ease";
-        imgEl.style.transform = "translate(0px,0px) scale(1)";
-        imgEl.style.opacity = "1";
-        setTimeout(()=>{ imgEl.style.transition = ""; }, 420);
-      });
-    } else {
-      imgEl.style.transform = "translate(0,0) scale(1)";
-      imgEl.style.opacity = "1";
-    }
-
-    startSlideshow(true);
   }
-
   function closeLightbox(){
-    stopSlideshow(true);
     lightbox.classList.remove("show");
     lightbox.setAttribute("aria-hidden","true");
   }
-
-  function nextPhoto(){ showPhoto(currentPhotoIndex + 1, true); }
-  function prevPhoto(){ showPhoto(currentPhotoIndex - 1, true); }
-
-  lbNext.addEventListener("click", (e)=>{ e.stopPropagation(); nextPhoto(); });
-  lbPrev.addEventListener("click", (e)=>{ e.stopPropagation(); prevPhoto(); });
-
-  lbClose.addEventListener("click", (e)=>{ e.stopPropagation(); closeLightbox(); });
-
   lightbox.addEventListener("click", closeLightbox);
-
   addEventListener("keydown", (e)=>{
-    if(!lightbox.classList.contains("show")) return;
-    if(e.key === "Escape") closeLightbox();
-    if(e.key === "ArrowRight") nextPhoto();
-    if(e.key === "ArrowLeft") prevPhoto();
-    if(e.key === " "){
-      e.preventDefault();
-      slideshowOn ? stopSlideshow() : startSlideshow();
+    if(e.key === "Escape"){
+      if(lightbox.classList.contains("show")) closeLightbox();
+      if(letterModal.classList.contains("show")) closeLetterModal();
+      if(albumModal.classList.contains("show")) closeAlbumModal();
     }
   });
-
-  function startSlideshow(silent=false){
-    slideshowOn = true;
-    lbPlay.classList.add("active");
-    lbPlay.textContent = "❚❚";
-    if(slideshowTimer) clearInterval(slideshowTimer);
-    slideshowTimer = setInterval(()=> nextPhoto(), 3200);
-  }
-
-  function stopSlideshow(silent=false){
-    slideshowOn = false;
-    lbPlay.classList.remove("active");
-    lbPlay.textContent = "▶︎";
-    if(slideshowTimer) clearInterval(slideshowTimer);
-    slideshowTimer = null;
-  }
-
-  lbPlay.addEventListener("click", (e)=>{
-    e.stopPropagation();
-    slideshowOn ? stopSlideshow() : startSlideshow();
-  });
-
-  // ===== Panel listów: pierwsza karta to "Książka" (zdjęcia) =====
-  function buildLettersGrid(){
-    lettersGrid.innerHTML = "";
-
-    // 1) książka zawsze na początku (lewo->prawo)
-    const book = document.createElement("div");
-    book.className = "letterCard bookCard";
-    book.id = "bookCard";
-
-    const top = document.createElement("div");
-    top.className = "cardTop";
-
-    const date = document.createElement("div");
-    date.className = "cardDate";
-    date.textContent = "—";
-
-    const badge = document.createElement("div");
-    badge.className = "cardBadge";
-    badge.textContent = "📖 Album";
-
-    top.appendChild(date);
-    top.appendChild(badge);
-
-    const title = document.createElement("div");
-    title.className = "cardTitle";
-    title.textContent = "Nasze zdjęcia";
-
-    const hint = document.createElement("div");
-    hint.className = "cardHint";
-    hint.textContent = "Kliknij, aby otworzyć / zamknąć";
-
-    const ico = document.createElement("div");
-    ico.className = "bookIcon";
-    ico.textContent = "📖";
-
-    book.appendChild(top);
-    book.appendChild(title);
-    book.appendChild(hint);
-    book.appendChild(ico);
-
-    book.addEventListener("click", ()=> toggleFolder());
-
-    lettersGrid.appendChild(book);
-
-    // 2) listy po dacie (lewo->prawo, góra->dół)
-    letters.forEach((L)=>{
-      const card = document.createElement("div");
-      card.className = "letterCard";
-      card.dataset.id = L.id;
-
-      const top = document.createElement("div");
-      top.className = "cardTop";
-
-      const date = document.createElement("div");
-      date.className = "cardDate";
-      date.textContent = L.date;
-
-      const badge = document.createElement("div");
-      badge.className = "cardBadge";
-      badge.textContent = L.badge || "📜 List";
-
-      top.appendChild(date);
-      top.appendChild(badge);
-
-      const title = document.createElement("div");
-      title.className = "cardTitle";
-      title.textContent = L.title;
-
-      const hint = document.createElement("div");
-      hint.className = "cardHint";
-      hint.textContent = "Kliknij, aby włożyć do koperty";
-
-      card.appendChild(top);
-      card.appendChild(title);
-      card.appendChild(hint);
-
-      card.addEventListener("click", ()=>{
-        renderLetterById(L.id);
-      });
-
-      lettersGrid.appendChild(card);
-    });
-
-    // stan książki
-    toggleFolder(false);
-  }
 
   // ===== Etap 3 =====
   function goStage3(){
     stage2.classList.add("hidden");
 
+    // start video i muzyka w geście usera
     bgVideo.style.opacity = 1;
     bgVideo.play().catch(()=>{});
 
@@ -1084,36 +808,13 @@ document.addEventListener("DOMContentLoaded", () => {
     music.play().catch(()=>{});
     fadeTo(music, MUSIC_VOL, 900);
 
-    buildLettersGrid();
-    renderLetterById(currentLetterId);
-    buildPhotos();
+    // nic się nie otwiera automatycznie
+    buildIcons();
+    buildAlbum();
 
-    lettersPanel.classList.remove("hidden");
-    lettersPanel.setAttribute("aria-hidden","false");
-
-    noteTop.classList.remove("hidden");
-
-    // koperta po 5s
-    envelopeArea.classList.remove("showSoft");
-    envelopeArea.classList.add("hiddenSoft");
-    envelopeArea.setAttribute("aria-hidden","true");
-
-    envelopeWrap.classList.remove("open");
-    letter.setAttribute("aria-hidden","true");
-
-    setTimeout(()=>{
-      envelopeArea.classList.remove("hiddenSoft");
-      envelopeArea.classList.add("showSoft");
-      envelopeArea.setAttribute("aria-hidden","false");
-    }, 5000);
+    iconDock.classList.remove("hidden");
+    iconDock.setAttribute("aria-hidden","false");
   }
-
-  // klik koperty: otwórz / zamknij
-  envelope.addEventListener("click", () => {
-    const willOpen = !envelopeWrap.classList.contains("open");
-    envelopeWrap.classList.toggle("open", willOpen);
-    letter.setAttribute("aria-hidden", String(!willOpen));
-  });
 
 });
 </script>
