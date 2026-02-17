@@ -329,6 +329,16 @@ body{
   padding:clamp(16px, 3.6vw, 28px);
 }
 
+/* Papier: pojawia się po animacji koperty */
+.paper{
+  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.9,.2,1);
+}
+.paper.isHidden{
+  opacity:0;
+  transform: translateY(14px) scale(.99);
+  pointer-events:none;
+}
+
 .paperTop{
   display:flex;
   align-items:baseline;
@@ -481,7 +491,7 @@ body{
           </div>
         </div>
 
-        <div class="paper" id="paper">
+        <div class="paper isHidden" id="paper">
           <div class="paperTop">
             <div class="paperDate" id="paperDate">—</div>
           </div>
@@ -541,6 +551,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const paperTitle = document.getElementById("paperTitle");
   const paperBody  = document.getElementById("paperBody");
   const paperSign  = document.getElementById("paperSign");
+  const paper = document.getElementById("paper");
 
   // Album grid
   const albumGrid = document.getElementById("albumGrid");
@@ -708,14 +719,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const L = letters.find(x=>x.id === id) || letters[0];
     renderLetter(L);
 
-    // reset anim
+    // reset anim + ukryj papier (najpierw animacja koperty)
     envAnim.classList.remove("open");
+    paper.classList.add("isHidden");
+
     letterModal.classList.add("show");
     letterModal.setAttribute("aria-hidden","false");
 
-    // animacja koperty (otwarcie) dopiero po kliknięciu
+    // animacja koperty
     requestAnimationFrame(()=>{
       setTimeout(()=> envAnim.classList.add("open"), 120);
+      // papier pojawia się chwilę później
+      setTimeout(()=> paper.classList.remove("isHidden"), 900);
     });
   }
 
@@ -723,6 +738,7 @@ document.addEventListener("DOMContentLoaded", () => {
     letterModal.classList.remove("show");
     letterModal.setAttribute("aria-hidden","true");
     envAnim.classList.remove("open");
+    paper.classList.add("isHidden");
   }
 
   closeLetter.addEventListener("click", (e)=>{ e.stopPropagation(); closeLetterModal(); });
