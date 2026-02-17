@@ -209,12 +209,15 @@ body{
 .modal{
   position:fixed;
   inset:0;
-  background:transparent; /* usunięte czarne tło */
+  background:transparent; /* list bez przyciemnienia */
   z-index:200;
   display:none;
   pointer-events:auto;
 }
 .modal.show{ display:grid; place-items:center; }
+
+#albumModal{ background:rgba(0,0,0,.78); }
+#letterModal{ background:transparent; }
 
 .modalCard{
   width:100%;
@@ -377,6 +380,15 @@ body{
   text-align:right;
 }
 
+
+#albumModal .modalCard{
+  background:var(--glass2);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:24px;
+  box-shadow:0 30px 100px rgba(0,0,0,.70);
+  padding:clamp(14px, 3vw, 20px);
+}
+
 /* ===== Album modal (scroll góra/dół) ===== */
 .albumCard{
   overflow:hidden;
@@ -491,7 +503,6 @@ body{
         </div>
 
         <div class="paper isHidden" id="paper">
- isHidden" id="paper">
           <div class="paperTop">
             <div class="paperDate" id="paperDate">—</div>
           </div>
