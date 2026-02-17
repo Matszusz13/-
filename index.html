@@ -28,6 +28,7 @@
   --paper-title: clamp(32px, 7vw, 62px);
   --paper-font:  clamp(18px, 3.8vw, 26px);
 
+  --timer-reserved: 220px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -35,7 +36,7 @@
 html,body{height:100%}
 body{
   margin:0;
-  overflow:hidden;
+  overflow:visible;
   font-family:Poppins,system-ui,sans-serif;
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
   color:var(--text);
@@ -234,12 +235,12 @@ body{
   inset:0;
   height:100dvh;
   display:grid;
-  place-items:center; /* idealne wycentrowanie */
-  /* równy odstęp z każdej strony + bezpieczne marginesy na iPhone */
+  place-items:center;
+  /* równe marginesy, a dół rezerwuje miejsce na zegar */
   padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
-  padding-bottom:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-bottom, 0px));
   padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
   padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
+  padding-bottom:calc(clamp(16px, 6vh, 56px) + var(--timer-reserved) + env(safe-area-inset-bottom, 0px));
   box-sizing:border-box;
 }
 
@@ -262,12 +263,12 @@ body{
   inset:0;
   height:100dvh;
   display:grid;
-  place-items:center; /* idealne wycentrowanie */
-  /* równy odstęp z każdej strony + bezpieczne marginesy na iPhone */
+  place-items:center;
+  /* równe marginesy, a dół rezerwuje miejsce na zegar */
   padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
-  padding-bottom:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-bottom, 0px));
   padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
   padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
+  padding-bottom:calc(clamp(16px, 6vh, 56px) + var(--timer-reserved) + env(safe-area-inset-bottom, 0px));
   box-sizing:border-box;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
@@ -281,7 +282,7 @@ body{
   box-shadow:none;
   padding:0;
   position:relative;
-  overflow:hidden;
+  overflow:visible;
 }
 
 /* Zamknij */
@@ -350,10 +351,10 @@ body{
   margin:0 auto;
 
   position:relative; /* dla X */
-  overflow:hidden;
+  overflow:visible;
 
   /* dopasowanie do ekranu (JS ustawia zmienne) */
-  transform: scale(var(--paper-scale, 1));
+  transform: translateY(calc(-0.20 * var(--timer-reserved))) scale(var(--paper-scale, 1));
   transform-origin: center;
   font-size: inherit;
 
@@ -443,7 +444,7 @@ body{
 
 /* ===== Album modal (scroll góra/dół) ===== */
 .albumCard{
-  overflow:hidden;
+  overflow:visible;
 }
 .albumScroller{
   max-height:76vh;
@@ -463,7 +464,7 @@ body{
 
 .thumb{
   border-radius:18px;
-  overflow:hidden;
+  overflow:visible;
   position:relative;
   background:rgba(255,255,255,.10);
   border:1px solid rgba(255,255,255,.22);
@@ -511,6 +512,58 @@ body{
   box-shadow:0 30px 90px rgba(0,0,0,.75);
 }
   .paperClose{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.12);color:#240018;box-shadow:0 8px 22px rgba(0,0,0,.12);}
+
+/* ===== ZEGAR (na dole) ===== */
+.bigTimer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:60;
+  pointer-events:none;
+  padding:16px 16px calc(16px + var(--safe-bottom));
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+.timerLabel{
+  font-weight:900;
+  color:#ffd0ffef;
+  text-shadow:0 10px 30px rgba(0,0,0,.55);
+  text-align:center;
+  font-size:clamp(12px, 2.8vw, 14px);
+}
+.timerGrid{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.tChip{
+  min-width:74px;
+  padding:10px 12px;
+  border-radius:16px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:0 18px 60px rgba(0,0,0,.40);
+  display:grid;
+  place-items:center;
+}
+.tN{
+  font-weight:900;
+  font-size:18px;
+  line-height:1;
+}
+.tL{
+  margin-top:4px;
+  font-size:11px;
+  color:#ffd0ffcc;
+  font-weight:700;
+}
+
 </style>
 </head>
 
@@ -540,6 +593,16 @@ body{
   <div class="ui">
     <div class="iconDock hidden" id="iconDock" aria-hidden="true">
       <div class="iconsGrid" id="iconsGrid"></div>
+    </div>
+  </div>
+
+  <div id="bigTimer" class="bigTimer hidden" aria-hidden="true">
+    <div class="timerLabel" id="timerLabel">⏳</div>
+    <div class="timerGrid">
+      <div class="tChip"><div class="tN" id="d">—</div><div class="tL">dni</div></div>
+      <div class="tChip"><div class="tN" id="h">—</div><div class="tL">godzin</div></div>
+      <div class="tChip"><div class="tN" id="m">—</div><div class="tL">min</div></div>
+      <div class="tChip"><div class="tN" id="s">—</div><div class="tL">sek</div></div>
     </div>
   </div>
 
@@ -643,6 +706,42 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     requestAnimationFrame(tick);
   }
+  // Timer (22.09.2025 17:30)
+  const startDate = new Date(2025, 8, 22, 17, 30, 0);
+  const dEl = document.getElementById("d");
+  const hEl = document.getElementById("h");
+  const mEl = document.getElementById("m");
+  const sEl = document.getElementById("s");
+  const timerLabel = document.getElementById("timerLabel");
+  const bigTimer = document.getElementById("bigTimer");
+  const pad2 = (n)=> String(n).padStart(2,"0");
+
+  function updateTimer(){
+    const now = new Date();
+    let diff = now - startDate;
+    let future = diff < 0;
+    if(future) diff = Math.abs(diff);
+
+    const totalSec = Math.floor(diff/1000);
+    const days = Math.floor(totalSec/86400);
+    const hours = Math.floor((totalSec%86400)/3600);
+    const mins  = Math.floor((totalSec%3600)/60);
+    const secs  = totalSec%60;
+
+    if(dEl) dEl.textContent = days;
+    if(hEl) hEl.textContent = pad2(hours);
+    if(mEl) mEl.textContent = pad2(mins);
+    if(sEl) sEl.textContent = pad2(secs);
+
+    if(timerLabel){
+      timerLabel.textContent = future
+        ? "⏳ Do tej chwili zostało jeszcze trochę… 💗"
+        : "⏳ Jesteśmy razem już tyle czasu 💞";
+    }
+  }
+  setInterval(updateTimer, 1000);
+  updateTimer();
+
 
   // Etap 1 -> 2
   startBtn.addEventListener("click", () => {
@@ -779,24 +878,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // dopasowanie tekstu do ekranu (bez scrolla w liście)
   function fitPaperToViewport(){
-    // Dostępny obszar w którym ma się zmieścić list (po paddingach letterShell)
     const shell = document.querySelector("#letterModal .letterShell");
     if(!shell) return;
 
-    // reset: czcionki i skala
+    // reset
     document.documentElement.style.setProperty("--paper-title", "clamp(32px, 7vw, 62px)");
     document.documentElement.style.setProperty("--paper-font",  "clamp(18px, 3.8vw, 26px)");
     document.documentElement.style.setProperty("--paper-scale", "1");
 
-    // chwilka, żeby przeglądarka przeliczyła layout po resecie
-    // (bez setTimeout - wystarczy reflow)
     void paper.offsetHeight;
 
     const shellRect = shell.getBoundingClientRect();
     const availableW = shellRect.width;
     const availableH = shellRect.height;
 
-    // Najpierw próbujemy zmniejszyć czcionkę (kilka kroków)
+    // najpierw czcionki
     let titlePx = 62;
     let bodyPx  = 26;
 
@@ -805,34 +901,26 @@ document.addEventListener("DOMContentLoaded", () => {
       document.documentElement.style.setProperty("--paper-font",  `${bodyPx}px`);
       void paper.offsetHeight;
     }
-
     applyFonts();
 
-    // Ustal maksymalny rozmiar listu: nie większy niż dostępny obszar
-    // Mierzymy realny rozmiar (bez skali) przez scrollHeight/scrollWidth.
-    for(let i=0;i<22;i++){
+    for(let i=0;i<26;i++){
       const needH = paper.scrollHeight;
       const needW = paper.scrollWidth;
-      const fits = (needH <= availableH) && (needW <= availableW);
-      if(fits) break;
-
-      // Zmniejszaj delikatnie
-      titlePx = Math.max(26, titlePx - 2);
-      bodyPx  = Math.max(13, bodyPx - 1);
+      if(needH <= availableH && needW <= availableW) break;
+      titlePx = Math.max(24, titlePx - 2);
+      bodyPx  = Math.max(12, bodyPx - 1);
       applyFonts();
     }
 
-    // Jeśli nadal nie mieści się wysokością/szerokością, skalujemy cały list (bez przesuwania)
+    // skalowanie całej kartki jako finalny krok
     const needH2 = paper.scrollHeight;
     const needW2 = paper.scrollWidth;
 
     const scaleW = availableW / Math.max(needW2, 1);
     const scaleH = availableH / Math.max(needH2, 1);
-    const scale = Math.min(1, scaleW, scaleH);
+    const scale = Math.min(1, scaleW, scaleH) * 0.98;
 
-    // Lekki margines bezpieczeństwa, żeby nic nie dotykało krawędzi
-    const safeScale = Math.max(0.72, scale * 0.98);
-    document.documentElement.style.setProperty("--paper-scale", String(safeScale));
+    document.documentElement.style.setProperty("--paper-scale", String(Math.max(0.70, scale)));
   }
 
   function openLetter(id){
@@ -957,6 +1045,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ikony pojawiają się dopiero po 3s (album) i co 1s kolejne
     revealIconsStagger();
+
+    if(bigTimer){
+      bigTimer.classList.remove("hidden");
+      bigTimer.setAttribute("aria-hidden","false");
+    }
   }
 
 });
