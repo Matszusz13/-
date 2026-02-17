@@ -258,8 +258,11 @@ body{
   height:clamp(190px, 36vw, 320px);
   position:relative;
   margin:8px auto 0;
-  filter: drop-shadow(0 26px 85px rgba(0,0,0,.62));
+  filter:none;
+  display:grid;
+  place-items:center;
 }
+
 
 .envVideo{
   position:absolute;
@@ -287,12 +290,13 @@ body{
   display:flex;
   flex-direction:column;
   justify-content:center;
+  align-items:stretch;
 
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
-  border:1px solid rgba(0,0,0,.08);
-  box-shadow:0 22px 70px rgba(0,0,0,.28), 0 10px 26px rgba(0,0,0,.18);
+  border:none;
+  box-shadow:none;
   padding:clamp(18px, 4vw, 32px);
 
   z-index:3;
@@ -322,7 +326,7 @@ body{
   color:var(--paperText);
   border-radius:22px;
   border:1px solid rgba(0,0,0,.08);
-  box-shadow:0 22px 70px rgba(0,0,0,.28), 0 10px 26px rgba(0,0,0,.18);
+  box-shadow:none;
   padding:clamp(18px, 4vw, 32px);
 
   position:relative; /* dla X */
@@ -486,7 +490,7 @@ body{
           </video>
         </div>
 
-        <div class="paper isHidden" id="paper" aria-live="polite">
+        <div class="paper isHidden" id="paper">
  isHidden" id="paper">
           <div class="paperTop">
             <div class="paperDate" id="paperDate">—</div>
