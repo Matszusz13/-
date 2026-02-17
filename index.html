@@ -262,11 +262,7 @@ body{
   padding:0;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
-#letterModal .envelopeHero{
-  margin:0;
-}
-
-
+#letterModal 
 
 .modalCard{
   width:100%;
@@ -304,23 +300,61 @@ body{
   position:relative;
 }
 
-/* List bez animacji koperty: powolne pojawianie (1min 30s) */
+/* MP4 animacja koperty (warstwa) */
+.envelopeHero{
+  width:min(620px, 94vw);
+  height:clamp(190px, 36vw, 320px);
+  position:relative;
+  margin:8px auto 0;
+  filter:none;
+  display:grid;
+  place-items:center;
+}
+
+
+.envVideo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  border-radius:22px;
+  opacity:1;
+  transform: translateZ(0);
+  transition: opacity 1s ease, transform 1s ease;
+  pointer-events:none;
+}
+.envVideo.fadeOut{
+  opacity:0;
+  transform: translateY(14px) scale(.985);
+}
+
+/* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
-  width:min(880px, 94vw);
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:stretch;
+
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
   border:none;
   box-shadow:none;
   padding:clamp(18px, 4vw, 32px);
-  position:relative; /* dla X */
+
+  z-index:3;
   opacity:1;
-  transform: translateY(0) scale(1);
-  transition: opacity 90s linear, transform 90s linear; /* 1 min 30 s */
+  transform: translateY(-8px) scale(1) rotate(-0.35deg);
+  transition: opacity 90s linear;
 }
+
 .paper.isHidden{
   opacity:0;
-  transform: translateY(0) scale(1);
   pointer-events:none;
   visibility:hidden;
 }
@@ -514,6 +548,12 @@ body{
       <button class="closeBtn" id="closeLetter" type="button">✕</button>
 
       <div class="letterShell">
+        <div class="envelopeHero" id="envelopeHero">
+          <video id="envVideo" class="envVideo" muted playsinline preload="auto">
+            <source src="envelope.mp4" type="video/mp4">
+          </video>
+        </div>
+
         <div class="paper isHidden" id="paper">
           <div class="paperTop">
             <div class="paperDate" id="paperDate">—</div>
@@ -566,6 +606,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLetter = document.getElementById("closeLetter");
   const closeAlbum = document.getElementById("closeAlbum");
 
+  const envVideo = document.getElementById("envVideo");
   const paper = document.getElementById("paper");
   const paperDate = document.getElementById("paperDate");
   const paperTitle = document.getElementById("paperTitle");
@@ -790,7 +831,6 @@ document.addEventListener("DOMContentLoaded", () => {
     letterModal.setAttribute("aria-hidden","false");
 
     requestAnimationFrame(()=>{
-      // pokaż i zacznij fade-in (CSS: 90s)
       paper.classList.remove("isHidden");
       paper.classList.add("show");
       setTimeout(fitPaperToViewport, 120);
@@ -800,11 +840,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function closeLetterModal(){
     letterModal.classList.remove("show");
     letterModal.setAttribute("aria-hidden","true");
-
-    // reset stanu listu
     paper.classList.add("isHidden");
     paper.classList.remove("show");
-  }catch(e){}
   }
 
   closeLetter.addEventListener("click", (e)=>{ e.stopPropagation(); closeLetterModal(); });
