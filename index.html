@@ -691,6 +691,8 @@ document.addEventListener("DOMContentLoaded", () => {
     startBtn.textContent = isTouch() ? "Dotknij" : "Kliknij";
   }
   updateStartText();
+  addEventListener("resize", updateStartText);
+  addEventListener("orientationchange", updateStartText);
   
   // Muzyka (głośność)
   const MUSIC_VOL = 0.25;
@@ -744,10 +746,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Etap 1 -> 2
-  startBtn.addEventListener("click", () => {
+  function goStage2(){
     stage1.classList.add("hidden");
     stage2.classList.remove("hidden");
-  });
+  }
+  // click + dotyk
+  startBtn.addEventListener("click", goStage2);
+  startBtn.addEventListener("touchstart", (e)=>{ e.preventDefault(); goStage2(); }, {passive:false});
+  startBtn.addEventListener("pointerup", goStage2);
 
   // Etap 2: zmiana tekstów na "Nie"
   let noCount = 0;
