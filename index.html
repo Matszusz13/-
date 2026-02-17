@@ -423,13 +423,14 @@ body{
 
 /* Papier: płynnie pojawia się pod znikającą kopertą (bez przeskoku) */
 .paper{
-  width:min(880px, 94vw);
+  width:100%;
+  height:100%;
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
   border:1px solid rgba(0,0,0,.08);
   box-shadow:0 14px 45px rgba(0,0,0,.20);
-  padding:clamp(16px, 3.6vw, 28px);
+  padding:clamp(18px, 4vw, 32px);
 
   position:relative; /* dla X */
   opacity:1;
@@ -438,13 +439,13 @@ body{
 }
 .paper.isHidden{
   opacity:0;
-  transform: translateY(12px) scale(.99);
+  transform: scale(.92);
   pointer-events:none;
-  visibility:hidden; /* klucz: nadal zajmuje miejsce w układzie siatki, ale nie "skacze" */
+  visibility:hidden;
 }
 .paper.show{
   opacity:1;
-  transform: translateY(0) scale(1);
+  transform: scale(1);
   visibility:visible;
 }
 
