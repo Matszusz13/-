@@ -236,11 +236,10 @@ body{
   height:100dvh;
   display:grid;
   place-items:center;
-  /* równe marginesy, a dół rezerwuje miejsce na zegar */
-  padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
-  padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
-  padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
-  padding-bottom:calc(clamp(16px, 6vh, 56px) + var(--timer-reserved) + env(safe-area-inset-bottom, 0px));
+  padding-top:calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(120px + env(safe-area-inset-bottom, 0px));
+  padding-left:16px;
+  padding-right:16px;
   box-sizing:border-box;
 }
 
@@ -264,11 +263,10 @@ body{
   height:100dvh;
   display:grid;
   place-items:center;
-  /* równe marginesy, a dół rezerwuje miejsce na zegar */
-  padding-top:calc(clamp(16px, 6vh, 56px) + env(safe-area-inset-top, 0px));
-  padding-left:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-left, 0px));
-  padding-right:calc(clamp(16px, 5vw, 56px) + env(safe-area-inset-right, 0px));
-  padding-bottom:calc(clamp(16px, 6vh, 56px) + var(--timer-reserved) + env(safe-area-inset-bottom, 0px));
+  padding-top:calc(16px + env(safe-area-inset-top, 0px));
+  padding-bottom:calc(120px + env(safe-area-inset-bottom, 0px));
+  padding-left:16px;
+  padding-right:16px;
   box-sizing:border-box;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
@@ -341,23 +339,26 @@ body{
 
 /* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
-  width:min(880px, 100%);
+  width:min(1100px, 100%);
   max-height:100%;
   background:linear-gradient(180deg, #fff, var(--paper));
   color:var(--paperText);
   border-radius:22px;
   border:none;
   box-shadow:none;
-  padding:clamp(18px, 4vw, 32px);
+  padding:clamp(24px, 4vw, 48px);
   margin:0 auto;
 
-  position:relative; /* dla X */
-  overflow:auto;      /* PROSTY SPOSÓB: list zawsze się mieści, przewijanie tylko w liście */
+  position:relative;
+  overflow:auto;
   -webkit-overflow-scrolling: touch;
 
   opacity:1;
-  transition: opacity 90s linear; /* 1 min 30 s */
+  transition: opacity 90s linear;
 }
+
+.paper::-webkit-scrollbar{ width:0; height:0; }
+.paper{ scrollbar-width:none; }
 
 /* ukryj pasek przewijania, ale zostaw scroll */
 .paper::-webkit-scrollbar{ width:0; height:0; }
