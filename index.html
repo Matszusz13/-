@@ -216,11 +216,31 @@ body{
 }
 .modal.show{ display:grid; place-items:center; }
 
-#albumModal{ background:rgba(0,0,0,.78); }
-/* Wycentrowanie koperty i listu: środek w środku ekranu (iOS/Android/PC) */
+/* Równy odstęp góra/dół dla koperty i listu (wszystkie listy) */
 #letterModal{
   background:transparent;
 }
+#letterModal .modalCard{
+  width:100%;
+  height:100dvh;
+  background:none;
+  border:none;
+  box-shadow:none;
+  padding:0;
+  overflow:visible;
+}
+#letterModal .letterShell{
+  position:fixed;
+  inset:0;
+  height:100dvh;
+  padding:6vh 0;              /* równy odstęp góra/dół */
+  box-sizing:border-box;
+  display:grid;
+  place-items:center;         /* środek idealnie w centrum */
+}
+
+
+#albumModal{ background:rgba(0,0,0,.78); }
 #letterModal .modalCard{
   width:100%;
   height:100dvh;              /* dynamiczny viewport (bez skoków na mobile) */
