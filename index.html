@@ -421,7 +421,7 @@ body{
   transform: translateY(16px) scale(.985);
 }
 
-/* Papier: pojawia się dopiero po animacji koperty */
+/* Papier: płynnie pojawia się pod znikającą kopertą (bez przeskoku) */
 .paper{
   width:min(880px, 94vw);
   background:linear-gradient(180deg, #fff, var(--paper));
@@ -430,23 +430,22 @@ body{
   border:1px solid rgba(0,0,0,.08);
   box-shadow:0 14px 45px rgba(0,0,0,.20);
   padding:clamp(16px, 3.6vw, 28px);
-  margin-top:14px;
 
+  position:relative; /* dla X */
   opacity:1;
   transform: translateY(0) scale(1);
   transition: opacity 1s ease, transform 1s cubic-bezier(.2,.9,.2,1);
 }
 .paper.isHidden{
-  display:none; /* klucz: najpierw tylko koperta */
-}
-.paper.reveal{
-  display:block;
   opacity:0;
-  transform: translateY(14px) scale(.99);
+  transform: translateY(12px) scale(.99);
+  pointer-events:none;
+  visibility:hidden; /* klucz: nadal zajmuje miejsce w układzie siatki, ale nie "skacze" */
 }
-.paper.reveal.show{
+.paper.show{
   opacity:1;
   transform: translateY(0) scale(1);
+  visibility:visible;
 }
 
 .paperTop{
@@ -874,36 +873,28 @@ document.addEventListener("DOMContentLoaded", () => {
     const L = letters.find(x=>x.id === id) || letters[0];
     renderLetter(L);
 
-    // przygotuj: najpierw tylko koperta
+    // start: widoczna koperta, list ukryty (ale na tej samej warstwie)
     envAnim.classList.remove("open","fadeUnder","wow");
     paper.classList.add("isHidden");
-    paper.classList.remove("reveal","show");
+    paper.classList.remove("show");
 
     letterModal.classList.add("show");
     letterModal.setAttribute("aria-hidden","false");
 
-    // animacja WOW: otwarcie koperty -> potem list
+    // WOW: otwarcie koperty -> płynne przejście w list
     requestAnimationFrame(()=>{
-      // drobny błysk/iskierki
       envAnim.classList.add("wow");
       setTimeout(()=> envAnim.classList.remove("wow"), 950);
 
       setTimeout(()=> envAnim.classList.add("open"), 120);
 
-      // po otwarciu klapki pokazujemy papier
+      // po otwarciu: koperta znika pod listem, a list płynnie się pokazuje (1s)
       setTimeout(()=>{
-        paper.classList.remove("isHidden");
-        paper.classList.add("reveal");
-
-        // koperta znika POD listem (fade under)
         envAnim.classList.add("fadeUnder");
-
-        // następna klatka -> fade in (1s)
-        requestAnimationFrame(()=>{
-          paper.classList.add("show");
-          // dopasuj rozmiar do ekranu (bez scrolla)
-          setTimeout(fitPaperToViewport, 40);
-        });
+        paper.classList.remove("isHidden");
+        // następna klatka: animacja opacity/transform
+        requestAnimationFrame(()=> paper.classList.add("show"));
+        setTimeout(fitPaperToViewport, 80);
       }, 900);
     });
   }
@@ -913,7 +904,7 @@ document.addEventListener("DOMContentLoaded", () => {
     letterModal.setAttribute("aria-hidden","true");
     envAnim.classList.remove("open","fadeUnder","wow");
     paper.classList.add("isHidden");
-    paper.classList.remove("reveal","show");
+    paper.classList.remove("show");
   }
 
   closeLetter.addEventListener("click", (e)=>{ e.stopPropagation(); closeLetterModal(); });
