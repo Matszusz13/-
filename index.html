@@ -234,9 +234,10 @@ body{
   inset:0;
   height:100dvh;
   display:flex;
-  align-items:center;     /* vertical center */
-  justify-content:center; /* horizontal center */
-  padding:0;
+  align-items:center;
+  justify-content:center;
+  padding:5vh 5vw;   /* równy odstęp góra/dół i lewa/prawa */
+  box-sizing:border-box;
 }
 
 
@@ -258,9 +259,10 @@ body{
   inset:0;
   height:100dvh;
   display:flex;
-  align-items:center;     /* vertical center */
-  justify-content:center; /* horizontal center */
-  padding:0;
+  align-items:center;
+  justify-content:center;
+  padding:5vh 5vw;   /* równy odstęp góra/dół i lewa/prawa */
+  box-sizing:border-box;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
 #letterModal 
@@ -332,6 +334,9 @@ body{
 
 /* Papier układamy NA kopercie, ale wizualnie jak kartka położona na kopercie */
 .paper{
+  max-width:900px;
+  width:100%;
+
   position:absolute;
   inset:0;
   width:100%;
