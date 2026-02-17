@@ -233,10 +233,10 @@ body{
   position:fixed;
   inset:0;
   height:100dvh;
-  padding:6vh 0;              /* równy odstęp góra/dół */
-  box-sizing:border-box;
-  display:grid;
-  place-items:center;         /* środek idealnie w centrum */
+  display:flex;
+  align-items:center;     /* vertical center */
+  justify-content:center; /* horizontal center */
+  padding:0;
 }
 
 
@@ -257,8 +257,9 @@ body{
   position:fixed;
   inset:0;
   height:100dvh;
-  display:grid;
-  place-items:center;
+  display:flex;
+  align-items:center;     /* vertical center */
+  justify-content:center; /* horizontal center */
   padding:0;
 }
 /* koperta (MP4) + list w tym samym, idealnie wycentrowanym boxie */
@@ -346,6 +347,7 @@ body{
   border:none;
   box-shadow:none;
   padding:clamp(18px, 4vw, 32px);
+  margin:0 auto;
 
   z-index:3;
   opacity:1;
